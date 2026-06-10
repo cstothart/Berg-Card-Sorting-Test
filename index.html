@@ -1,0 +1,1201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Berg Card Sorting Test</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #eef2f5;
+      --panel: #ffffff;
+      --panel-strong: #f7f9fb;
+      --text: #15202b;
+      --muted: #52616f;
+      --line: #c9d3dc;
+      --line-strong: #8091a1;
+      --accent: #146c94;
+      --accent-dark: #0e4f6d;
+      --good: #137a43;
+      --bad: #b42318;
+      --warn: #b7791f;
+      --shadow: 0 14px 30px rgba(21, 32, 43, 0.12);
+      --radius: 8px;
+      --card-ratio: 4 / 3;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.9rem clamp(1rem, 4vw, 2rem);
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      min-width: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+      line-height: 1.1;
+      font-weight: 760;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .status-strip {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      padding: 0.3rem 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-strong);
+      white-space: nowrap;
+    }
+
+    .main {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: clamp(1rem, 3vw, 1.7rem);
+      flex: 1;
+    }
+
+    .screen[hidden] {
+      display: none !important;
+    }
+
+    .setup-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+      gap: clamp(1rem, 3vw, 1.5rem);
+      align-items: start;
+    }
+
+    .intro-panel,
+    .config-panel,
+    .results-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .intro-panel {
+      padding: clamp(1.1rem, 3vw, 1.5rem);
+    }
+
+    .intro-panel h2,
+    .results-panel h2,
+    .config-panel h2 {
+      margin: 0 0 0.8rem;
+      font-size: clamp(1.3rem, 3vw, 1.9rem);
+      line-height: 1.15;
+    }
+
+    .intro-panel p,
+    .config-panel p {
+      margin: 0 0 0.85rem;
+      color: var(--muted);
+      max-width: 65ch;
+    }
+
+    .rule-list {
+      margin: 1rem 0 0;
+      padding-left: 1.2rem;
+      color: var(--text);
+    }
+
+    .rule-list li + li {
+      margin-top: 0.45rem;
+    }
+
+    .config-panel {
+      padding: 1rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .field label {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .field select {
+      width: 100%;
+      min-height: 2.8rem;
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--text);
+    }
+
+    .version-details {
+      margin: 0 0 1rem;
+      padding: 0.85rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-strong);
+      color: var(--muted);
+      min-height: 6rem;
+    }
+
+    .primary-button,
+    .secondary-button,
+    .quiet-button {
+      min-height: 2.8rem;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      padding: 0.58rem 0.9rem;
+      font-weight: 720;
+      transition: background 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease;
+    }
+
+    .primary-button {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .primary-button:hover,
+    .primary-button:focus-visible {
+      background: var(--accent-dark);
+    }
+
+    .secondary-button {
+      background: #fff;
+      color: var(--accent-dark);
+      border-color: var(--line-strong);
+    }
+
+    .secondary-button:hover,
+    .secondary-button:focus-visible {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .quiet-button {
+      min-height: 2.35rem;
+      padding: 0.4rem 0.7rem;
+      background: transparent;
+      color: var(--muted);
+      border-color: var(--line);
+    }
+
+    .quiet-button:hover,
+    .quiet-button:focus-visible {
+      color: var(--text);
+      border-color: var(--line-strong);
+      background: var(--panel-strong);
+    }
+
+    .config-panel .primary-button {
+      width: 100%;
+    }
+
+    .task-screen {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .progress-wrap {
+      height: 0.55rem;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #d7e0e7;
+      border: 1px solid #c0ccd6;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--accent);
+      transition: width 180ms ease;
+    }
+
+    .task-board {
+      display: grid;
+      gap: clamp(0.9rem, 2vw, 1.2rem);
+      padding: clamp(0.85rem, 2vw, 1.2rem);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #d9dee3;
+      box-shadow: var(--shadow);
+    }
+
+    .pile-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: clamp(0.65rem, 2vw, 1rem);
+    }
+
+    .pile-button {
+      position: relative;
+      min-width: 0;
+      padding: 0;
+      border: 3px solid #1d252c;
+      border-radius: 5px;
+      background: #fff;
+      aspect-ratio: var(--card-ratio);
+      box-shadow: 0 4px 10px rgba(21, 32, 43, 0.14);
+      overflow: hidden;
+    }
+
+    .pile-button::after {
+      content: attr(data-index);
+      position: absolute;
+      top: 0.35rem;
+      left: 0.4rem;
+      width: 1.45rem;
+      height: 1.45rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(21, 32, 43, 0.82);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .pile-button:hover,
+    .pile-button:focus-visible {
+      border-color: var(--accent);
+      outline: 3px solid rgba(20, 108, 148, 0.22);
+      outline-offset: 2px;
+    }
+
+    .pile-button:disabled {
+      opacity: 0.72;
+    }
+
+    .pile-button.selected {
+      border-color: var(--accent);
+      outline: 4px solid rgba(20, 108, 148, 0.25);
+      outline-offset: 2px;
+    }
+
+    .draw-area {
+      display: grid;
+      place-items: center;
+      gap: 0.85rem;
+      min-height: clamp(245px, 36vh, 370px);
+      padding: clamp(0.5rem, 2vw, 1rem);
+    }
+
+    .feedback {
+      min-height: 2.3rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.35rem 0.9rem;
+      border-radius: var(--radius);
+      color: var(--text);
+      font-weight: 800;
+      font-size: clamp(1.15rem, 3vw, 1.45rem);
+      background: transparent;
+      border: 1px solid transparent;
+    }
+
+    .feedback.good {
+      color: var(--good);
+      background: rgba(19, 122, 67, 0.1);
+      border-color: rgba(19, 122, 67, 0.25);
+    }
+
+    .feedback.bad {
+      color: var(--bad);
+      background: rgba(180, 35, 24, 0.1);
+      border-color: rgba(180, 35, 24, 0.25);
+    }
+
+    .draw-card {
+      width: min(260px, 58vw);
+      aspect-ratio: var(--card-ratio);
+      border: 3px solid #1d252c;
+      border-radius: 5px;
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(21, 32, 43, 0.16);
+      overflow: hidden;
+    }
+
+    .draw-card.empty {
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .cue {
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .task-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .results-panel {
+      padding: clamp(1.1rem, 3vw, 1.5rem);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 0.85rem;
+      margin: 1rem 0 1.2rem;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-strong);
+      padding: 0.85rem;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      line-height: 1.1;
+    }
+
+    .result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    @media (max-width: 840px) {
+      .setup-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .status-strip {
+        justify-content: flex-start;
+      }
+
+      .pile-grid {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+      }
+    }
+
+    @media (max-width: 470px) {
+      .main {
+        padding: 0.75rem;
+      }
+
+      .pile-grid {
+        gap: 0.5rem;
+      }
+
+      .pile-button::after {
+        width: 1.25rem;
+        height: 1.25rem;
+        font-size: 0.72rem;
+      }
+
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .result-actions,
+      .task-actions {
+        display: grid;
+      }
+
+      .result-actions .primary-button,
+      .secondary-button,
+      .quiet-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <h1>Berg Card Sorting Test</h1>
+        <span>Standalone browser task</span>
+      </div>
+      <div class="status-strip" id="statusStrip" aria-live="polite">
+        <span class="status-pill" id="versionStatus">Ready</span>
+        <span class="status-pill" id="trialStatus">No active session</span>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="screen setup-screen" id="setupScreen">
+        <div class="setup-layout">
+          <div class="intro-panel">
+            <h2>Sort each drawn card into one of the four piles.</h2>
+            <p>Cards can match a pile by color, shape, or count. The correct sorting rule is not shown and changes after a run of correct sorts.</p>
+            <p>After each response, the task gives feedback and advances to the next card. Use the mouse, touch, or number keys 1 through 4 to select a pile.</p>
+            <ol class="rule-list">
+              <li>Look at the drawn card in the center of the screen.</li>
+              <li>Select the pile where the card should be sorted.</li>
+              <li>Use feedback to infer the current rule.</li>
+            </ol>
+          </div>
+
+          <aside class="config-panel" aria-labelledby="configHeading">
+            <h2 id="configHeading">Session</h2>
+            <div class="field">
+              <label for="versionSelect">Configuration</label>
+              <select id="versionSelect">
+                <option value="short">Short Version (default)</option>
+                <option value="original">Original Version</option>
+              </select>
+            </div>
+            <div class="version-details" id="versionDetails"></div>
+            <button class="primary-button" id="startButton" type="button">Start task</button>
+          </aside>
+        </div>
+      </section>
+
+      <section class="screen task-screen" id="taskScreen" hidden>
+        <div class="progress-wrap" aria-hidden="true">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <section class="task-board" aria-label="Card sorting task">
+          <div class="pile-grid" id="pileGrid" aria-label="Sorting piles"></div>
+          <div class="draw-area">
+            <div class="feedback" id="feedback" aria-live="assertive"></div>
+            <div class="draw-card empty" id="drawCard">Waiting</div>
+            <p class="cue" id="responseCue">Select the pile on which the card should be sorted.</p>
+          </div>
+        </section>
+
+        <div class="task-actions">
+          <button class="quiet-button" id="quitButton" type="button">End session</button>
+        </div>
+      </section>
+
+      <section class="screen results-screen" id="resultsScreen" hidden>
+        <div class="results-panel">
+          <h2>Session complete</h2>
+          <p id="resultsSummary"></p>
+          <div class="metric-grid" id="metricGrid"></div>
+          <div class="result-actions">
+            <button class="primary-button" id="downloadButton" type="button">Download CSV</button>
+            <button class="secondary-button" id="restartButton" type="button">Start another session</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    /*
+      Editable task configuration.
+
+      The two versions mirror the Neurobehavioral Systems description:
+      - Short: modified 24-card deck, rule changes after 5 correct sorts, 64 total sorts.
+      - Original: full 64-card deck, rule changes after 10 correct sorts, 128 total sorts.
+
+      The reference piles use the standard WCST-style exemplars shown in the source:
+      one red triangle, two green diamonds, three yellow crosses, four blue circles.
+    */
+    const TASK_CONFIG = {
+      csvFilenamePrefix: "berg_card_sorting_test",
+      feedbackDurationMs: 750,
+      ruleSequence: ["Color", "Shape", "Count"],
+      initialRuleIndex: 0,
+      versions: {
+        short: {
+          label: "Short Version",
+          deck: "short",
+          totalSorts: 64,
+          correctSortsToShift: 5,
+          description: "Modified 24-card deck. No drawn card matches a pile on more than one attribute. Rule shifts after 5 correct sorts in a row."
+        },
+        original: {
+          label: "Original Version",
+          deck: "full",
+          totalSorts: 128,
+          correctSortsToShift: 10,
+          description: "Full 64-card deck containing all count, shape, and color combinations. Rule shifts after 10 correct sorts in a row."
+        }
+      },
+      piles: [
+        { count: 1, shape: "triangle", color: "red" },
+        { count: 2, shape: "diamond", color: "green" },
+        { count: 3, shape: "cross", color: "yellow" },
+        { count: 4, shape: "circle", color: "blue" }
+      ],
+      counts: [1, 2, 3, 4],
+      shapes: ["triangle", "diamond", "cross", "circle"],
+      colors: ["red", "green", "yellow", "blue"],
+      colorHex: {
+        red: "#ff1f1f",
+        green: "#00b928",
+        yellow: "#ffc400",
+        blue: "#0717d5"
+      }
+    };
+
+    const dom = {
+      setupScreen: document.getElementById("setupScreen"),
+      taskScreen: document.getElementById("taskScreen"),
+      resultsScreen: document.getElementById("resultsScreen"),
+      versionSelect: document.getElementById("versionSelect"),
+      versionDetails: document.getElementById("versionDetails"),
+      startButton: document.getElementById("startButton"),
+      quitButton: document.getElementById("quitButton"),
+      restartButton: document.getElementById("restartButton"),
+      downloadButton: document.getElementById("downloadButton"),
+      pileGrid: document.getElementById("pileGrid"),
+      drawCard: document.getElementById("drawCard"),
+      feedback: document.getElementById("feedback"),
+      responseCue: document.getElementById("responseCue"),
+      versionStatus: document.getElementById("versionStatus"),
+      trialStatus: document.getElementById("trialStatus"),
+      progressBar: document.getElementById("progressBar"),
+      metricGrid: document.getElementById("metricGrid"),
+      resultsSummary: document.getElementById("resultsSummary")
+    };
+
+    let state = null;
+    let feedbackTimer = null;
+
+    function validateTaskConfig() {
+      const expectedRules = ["Color", "Shape", "Count"];
+      const configuredRules = TASK_CONFIG.ruleSequence.slice().sort().join("|");
+      if (configuredRules !== expectedRules.slice().sort().join("|")) {
+        throw new Error("TASK_CONFIG.ruleSequence must contain Color, Shape, and Count.");
+      }
+      if (TASK_CONFIG.piles.length !== 4) {
+        throw new Error("TASK_CONFIG.piles must define exactly four sorting piles.");
+      }
+      const shortDeck = buildDeck("short");
+      const fullDeck = buildDeck("full");
+      if (shortDeck.length !== 24) {
+        throw new Error("The short deck must contain exactly 24 cards.");
+      }
+      if (fullDeck.length !== 64) {
+        throw new Error("The full deck must contain exactly 64 cards.");
+      }
+      for (const card of shortDeck) {
+        for (const pile of TASK_CONFIG.piles) {
+          const matchCount = Number(card.count === pile.count) + Number(card.shape === pile.shape) + Number(card.color === pile.color);
+          if (matchCount > 1) {
+            throw new Error("Short deck card matches a pile on more than one attribute.");
+          }
+        }
+      }
+    }
+
+    function buildDeck(deckType) {
+      const cards = [];
+      for (const count of TASK_CONFIG.counts) {
+        for (const shape of TASK_CONFIG.shapes) {
+          for (const color of TASK_CONFIG.colors) {
+            const card = { count, shape, color };
+            if (deckType === "short" && !isShortDeckCard(card)) {
+              continue;
+            }
+            cards.push(card);
+          }
+        }
+      }
+      return cards;
+    }
+
+    function isShortDeckCard(card) {
+      return TASK_CONFIG.piles.every((pile) => {
+        const matchCount = Number(card.count === pile.count) + Number(card.shape === pile.shape) + Number(card.color === pile.color);
+        return matchCount <= 1;
+      });
+    }
+
+    function makeSessionId() {
+      const now = new Date();
+      const randomPart = Math.random().toString(36).slice(2, 8).toUpperCase();
+      return `${now.toISOString().replace(/[-:.TZ]/g, "").slice(0, 14)}-${randomPart}`;
+    }
+
+    function hashString(input) {
+      let hash = 2166136261;
+      for (let i = 0; i < input.length; i += 1) {
+        hash ^= input.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return hash >>> 0;
+    }
+
+    function mulberry32(seed) {
+      return function nextRandom() {
+        seed |= 0;
+        seed = (seed + 0x6D2B79F5) | 0;
+        let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function shuffle(cards, rng) {
+      const copy = cards.slice();
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(rng() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function showScreen(screenName) {
+      dom.setupScreen.hidden = screenName !== "setup";
+      dom.taskScreen.hidden = screenName !== "task";
+      dom.resultsScreen.hidden = screenName !== "results";
+    }
+
+    function updateVersionDetails() {
+      const version = TASK_CONFIG.versions[dom.versionSelect.value];
+      dom.versionDetails.innerHTML = `
+        <strong>${escapeHtml(version.label)}</strong><br>
+        ${escapeHtml(version.description)}<br>
+        <span>${version.totalSorts} total sorts.</span>
+      `;
+      dom.versionStatus.textContent = version.label;
+    }
+
+    function startTask() {
+      const versionKey = dom.versionSelect.value;
+      const version = TASK_CONFIG.versions[versionKey];
+      const sessionId = makeSessionId();
+      const seed = hashString(sessionId);
+      state = {
+        sessionId,
+        seed,
+        versionKey,
+        version,
+        startedAt: new Date().toISOString(),
+        completedAt: "",
+        rng: mulberry32(seed),
+        baseDeck: buildDeck(version.deck),
+        drawPile: [],
+        trialNumber: 0,
+        currentCard: null,
+        activeRuleIndex: TASK_CONFIG.initialRuleIndex,
+        activeRule: TASK_CONFIG.ruleSequence[TASK_CONFIG.initialRuleIndex],
+        previousRule: "",
+        correctInRow: 0,
+        completedCategories: 0,
+        totalCorrect: 0,
+        totalErrors: 0,
+        perseverativeErrors: 0,
+        responseEnabled: false,
+        trialStartedAt: 0,
+        selectedPileIndex: null,
+        trials: []
+      };
+      clearTimeout(feedbackTimer);
+      feedbackTimer = null;
+      renderPiles();
+      showScreen("task");
+      nextTrial();
+    }
+
+    function renderPiles() {
+      dom.pileGrid.innerHTML = "";
+      TASK_CONFIG.piles.forEach((pile, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "pile-button";
+        button.dataset.index = String(index + 1);
+        button.setAttribute("aria-label", `Pile ${index + 1}: ${describeCard(pile)}`);
+        button.innerHTML = renderCardSvg(pile, `pile-${index + 1}`);
+        button.addEventListener("click", () => selectPile(index));
+        dom.pileGrid.appendChild(button);
+      });
+    }
+
+    function nextTrial() {
+      if (!state || state.trialNumber >= state.version.totalSorts) {
+        finishTask();
+        return;
+      }
+
+      ensureDrawPile();
+      state.currentCard = state.drawPile.shift();
+      state.trialNumber += 1;
+      state.selectedPileIndex = null;
+      state.responseEnabled = true;
+      state.trialStartedAt = performance.now();
+
+      dom.feedback.textContent = "";
+      dom.feedback.className = "feedback";
+      dom.drawCard.className = "draw-card";
+      dom.drawCard.innerHTML = renderCardSvg(state.currentCard, `trial-${state.trialNumber}`);
+      dom.responseCue.textContent = "Select the pile on which the card should be sorted.";
+      for (const button of dom.pileGrid.querySelectorAll(".pile-button")) {
+        button.disabled = false;
+        button.classList.remove("selected");
+      }
+      updateStatus();
+    }
+
+    function ensureDrawPile() {
+      while (state.drawPile.length === 0) {
+        state.drawPile = shuffle(state.baseDeck, state.rng);
+      }
+    }
+
+    function selectPile(pileIndex) {
+      if (!state || !state.responseEnabled) {
+        return;
+      }
+
+      state.responseEnabled = false;
+      state.selectedPileIndex = pileIndex;
+      const selectedPile = TASK_CONFIG.piles[pileIndex];
+      const rt = Math.round(performance.now() - state.trialStartedAt);
+      const currentRule = state.activeRule;
+      const previousRuleAtTrial = state.previousRule;
+      const correct = matchesRule(state.currentCard, selectedPile, currentRule);
+      const perseverative = !correct && Boolean(previousRuleAtTrial) && matchesRule(state.currentCard, selectedPile, previousRuleAtTrial);
+
+      if (correct) {
+        state.totalCorrect += 1;
+        state.correctInRow += 1;
+      } else {
+        state.totalErrors += 1;
+        state.correctInRow = 0;
+      }
+
+      if (perseverative) {
+        state.perseverativeErrors += 1;
+      }
+
+      const correctInRowForData = state.correctInRow;
+      const willShiftRule = correct && state.correctInRow >= state.version.correctSortsToShift;
+      const row = makeTrialRow({
+        selectedPile,
+        pileIndex,
+        currentRule,
+        previousRuleAtTrial,
+        correct,
+        perseverative,
+        correctInRowForData,
+        rt,
+        ruleShifted: willShiftRule
+      });
+      state.trials.push(row);
+
+      if (willShiftRule) {
+        state.completedCategories += 1;
+        state.previousRule = state.activeRule;
+        state.activeRuleIndex = (state.activeRuleIndex + 1) % TASK_CONFIG.ruleSequence.length;
+        state.activeRule = TASK_CONFIG.ruleSequence[state.activeRuleIndex];
+        state.correctInRow = 0;
+      }
+
+      showFeedback(correct, pileIndex);
+      updateStatus();
+
+      feedbackTimer = window.setTimeout(() => {
+        feedbackTimer = null;
+        nextTrial();
+      }, TASK_CONFIG.feedbackDurationMs);
+    }
+
+    function makeTrialRow(details) {
+      return {
+        sessionId: state.sessionId,
+        seed: state.seed,
+        startedAt: state.startedAt,
+        version: state.version.label,
+        block: "Main",
+        trial: state.trialNumber,
+        drawnCardCount: state.currentCard.count,
+        drawnCardShape: titleCase(state.currentCard.shape),
+        drawnCardColor: titleCase(state.currentCard.color),
+        selectedPile: details.pileIndex + 1,
+        sortedCount: details.selectedPile.count,
+        sortedShape: titleCase(details.selectedPile.shape),
+        sortedColor: titleCase(details.selectedPile.color),
+        correctSort: details.currentRule,
+        previousSort: details.previousRuleAtTrial || "",
+        correctInRow: details.correctInRowForData,
+        accuracy: details.correct ? "Correct" : "Incorrect",
+        perseverativeError: details.perseverative ? "Yes" : "No",
+        ruleShiftedAfterTrial: details.ruleShifted ? "Yes" : "No",
+        rt: details.rt
+      };
+    }
+
+    function showFeedback(correct, pileIndex) {
+      for (const [index, button] of Array.from(dom.pileGrid.querySelectorAll(".pile-button")).entries()) {
+        button.disabled = true;
+        button.classList.toggle("selected", index === pileIndex);
+      }
+      dom.feedback.textContent = correct ? "Correct!" : "Incorrect";
+      dom.feedback.className = `feedback ${correct ? "good" : "bad"}`;
+      dom.responseCue.textContent = "Next card loading.";
+    }
+
+    function finishTask() {
+      if (!state) {
+        return;
+      }
+      clearTimeout(feedbackTimer);
+      feedbackTimer = null;
+      state.completedAt = new Date().toISOString();
+      state.responseEnabled = false;
+      renderResults();
+      showScreen("results");
+      updateStatus(true);
+    }
+
+    function endSessionEarly() {
+      if (!state || state.trials.length === 0) {
+        resetToSetup();
+        return;
+      }
+      finishTask();
+    }
+
+    function resetToSetup() {
+      clearTimeout(feedbackTimer);
+      feedbackTimer = null;
+      state = null;
+      dom.drawCard.className = "draw-card empty";
+      dom.drawCard.textContent = "Waiting";
+      dom.feedback.textContent = "";
+      dom.progressBar.style.width = "0%";
+      dom.trialStatus.textContent = "No active session";
+      updateVersionDetails();
+      showScreen("setup");
+    }
+
+    function renderResults() {
+      const trialsCompleted = state.trials.length;
+      const accuracy = trialsCompleted ? state.totalCorrect / trialsCompleted : 0;
+      const medianRt = median(state.trials.map((trial) => trial.rt).filter(Number.isFinite));
+      dom.resultsSummary.textContent = `${state.version.label} ended after ${trialsCompleted} of ${state.version.totalSorts} sorts.`;
+      const metrics = [
+        { label: "Correct", value: `${state.totalCorrect} / ${trialsCompleted}` },
+        { label: "Accuracy", value: `${Math.round(accuracy * 100)}%` },
+        { label: "Categories completed", value: state.completedCategories },
+        { label: "Perseverative errors", value: state.perseverativeErrors },
+        { label: "Total errors", value: state.totalErrors },
+        { label: "Median RT", value: Number.isFinite(medianRt) ? `${Math.round(medianRt)} ms` : "n/a" },
+        { label: "Final streak", value: state.correctInRow },
+        { label: "Session ID", value: state.sessionId }
+      ];
+      dom.metricGrid.innerHTML = metrics.map((metric) => `
+        <div class="metric">
+          <span>${escapeHtml(metric.label)}</span>
+          <strong>${escapeHtml(String(metric.value))}</strong>
+        </div>
+      `).join("");
+    }
+
+    function updateStatus(forceComplete = false) {
+      if (!state) {
+        dom.trialStatus.textContent = "No active session";
+        dom.progressBar.style.width = "0%";
+        return;
+      }
+      dom.versionStatus.textContent = state.version.label;
+      if (forceComplete) {
+        dom.trialStatus.textContent = "Session complete";
+        dom.progressBar.style.width = "100%";
+        return;
+      }
+      dom.trialStatus.textContent = `Sort ${state.trialNumber} of ${state.version.totalSorts}`;
+      const completed = Math.max(0, state.trialNumber - 1);
+      dom.progressBar.style.width = `${Math.min(100, (completed / state.version.totalSorts) * 100)}%`;
+    }
+
+    function matchesRule(card, pile, rule) {
+      if (rule === "Color") {
+        return card.color === pile.color;
+      }
+      if (rule === "Shape") {
+        return card.shape === pile.shape;
+      }
+      if (rule === "Count") {
+        return card.count === pile.count;
+      }
+      throw new Error(`Unknown sorting rule: ${rule}`);
+    }
+
+    function describeCard(card) {
+      const pluralShapes = {
+        triangle: "Triangles",
+        diamond: "Diamonds",
+        cross: "Crosses",
+        circle: "Circles"
+      };
+      const noun = card.count === 1 ? titleCase(card.shape) : pluralShapes[card.shape];
+      return `${card.count} ${titleCase(card.color)} ${noun}`;
+    }
+
+    function renderCardSvg(card, idPrefix) {
+      const positions = {
+        1: [{ x: 100, y: 75 }],
+        2: [{ x: 68, y: 75 }, { x: 132, y: 75 }],
+        3: [{ x: 62, y: 58 }, { x: 138, y: 58 }, { x: 100, y: 104 }],
+        4: [{ x: 66, y: 54 }, { x: 134, y: 54 }, { x: 66, y: 102 }, { x: 134, y: 102 }]
+      };
+      const fill = TASK_CONFIG.colorHex[card.color];
+      const shapes = positions[card.count].map((position, index) => renderShape(card.shape, position.x, position.y, fill, `${idPrefix}-${index}`)).join("");
+      return `
+        <svg viewBox="0 0 200 150" role="img" aria-label="${escapeHtml(describeCard(card))}" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="198" height="148" rx="3" fill="#ffffff"/>
+          ${shapes}
+        </svg>
+      `;
+    }
+
+    function renderShape(shape, x, y, fill, id) {
+      if (shape === "circle") {
+        return `<circle id="${id}" cx="${x}" cy="${y}" r="20" fill="${fill}"/>`;
+      }
+      if (shape === "triangle") {
+        return `<polygon id="${id}" points="${x},${y - 24} ${x - 24},${y + 22} ${x + 24},${y + 22}" fill="${fill}"/>`;
+      }
+      if (shape === "diamond") {
+        return `<polygon id="${id}" points="${x},${y - 27} ${x + 19},${y} ${x},${y + 27} ${x - 19},${y}" fill="${fill}"/>`;
+      }
+      if (shape === "cross") {
+        return `
+          <g id="${id}" fill="${fill}">
+            <rect x="${x - 9}" y="${y - 28}" width="18" height="56" rx="1"/>
+            <rect x="${x - 28}" y="${y - 9}" width="56" height="18" rx="1"/>
+          </g>
+        `;
+      }
+      throw new Error(`Unknown card shape: ${shape}`);
+    }
+
+    function makeCsv() {
+      const columns = [
+        "Session ID",
+        "Seed",
+        "Started At",
+        "Completed At",
+        "Version",
+        "Block",
+        "Trial",
+        "Drawn Card Count",
+        "Drawn Card Shape",
+        "Drawn Card Color",
+        "Selected Pile",
+        "Sorted Count",
+        "Sorted Shape",
+        "Sorted Color",
+        "Correct Sort",
+        "Previous Sort",
+        "Correct in a Row",
+        "Accuracy",
+        "Perseverative Error",
+        "Rule Shifted After Trial",
+        "RT"
+      ];
+      const rows = state.trials.map((trial) => [
+        trial.sessionId,
+        trial.seed,
+        trial.startedAt,
+        state.completedAt,
+        trial.version,
+        trial.block,
+        trial.trial,
+        trial.drawnCardCount,
+        trial.drawnCardShape,
+        trial.drawnCardColor,
+        trial.selectedPile,
+        trial.sortedCount,
+        trial.sortedShape,
+        trial.sortedColor,
+        trial.correctSort,
+        trial.previousSort,
+        trial.correctInRow,
+        trial.accuracy,
+        trial.perseverativeError,
+        trial.ruleShiftedAfterTrial,
+        trial.rt
+      ]);
+      return [columns, ...rows].map((row) => row.map(csvEscape).join(",")).join("\r\n");
+    }
+
+    function downloadCsv() {
+      if (!state) {
+        return;
+      }
+      const csv = makeCsv();
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `${TASK_CONFIG.csvFilenamePrefix}_${state.sessionId}.csv`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function csvEscape(value) {
+      const text = value == null ? "" : String(value);
+      if (/[",\r\n]/.test(text)) {
+        return `"${text.replace(/"/g, '""')}"`;
+      }
+      return text;
+    }
+
+    function median(values) {
+      if (!values.length) {
+        return NaN;
+      }
+      const sorted = values.slice().sort((a, b) => a - b);
+      const middle = Math.floor(sorted.length / 2);
+      return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+    }
+
+    function titleCase(value) {
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (!state || !state.responseEnabled) {
+        return;
+      }
+      const pileIndex = Number(event.key) - 1;
+      if (pileIndex >= 0 && pileIndex < TASK_CONFIG.piles.length) {
+        event.preventDefault();
+        selectPile(pileIndex);
+      }
+    });
+
+    dom.versionSelect.addEventListener("change", updateVersionDetails);
+    dom.startButton.addEventListener("click", startTask);
+    dom.quitButton.addEventListener("click", endSessionEarly);
+    dom.restartButton.addEventListener("click", resetToSetup);
+    dom.downloadButton.addEventListener("click", downloadCsv);
+
+    validateTaskConfig();
+    updateVersionDetails();
+    showScreen("setup");
+
+    window.BCST_DEBUG = {
+      TASK_CONFIG,
+      buildDeck,
+      isShortDeckCard,
+      matchesRule,
+      renderCardSvg
+    };
+  </script>
+</body>
+</html>
