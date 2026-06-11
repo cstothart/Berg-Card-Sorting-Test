@@ -1141,7 +1141,7 @@
       </div>
       <div class="status-strip" id="statusStrip" aria-live="polite">
         <span class="status-pill" id="versionStatus">Ready</span>
-        <span class="status-pill" id="trialStatus">No active session</span>
+        <span class="status-pill" id="trialStatus">No game yet</span>
       </div>
     </header>
 
@@ -1149,21 +1149,21 @@
       <section class="screen setup-screen" id="setupScreen">
         <div class="setup-layout">
           <div class="intro-panel">
-            <h2>Sort each drawn card into one of the four piles.</h2>
-            <p>Cards can match a pile by color, shape, or count. The sorting rule can change during the task.</p>
-            <p>After each response, feedback appears and the next card loads. Use touch, mouse, or number keys 1 through 4.</p>
+            <h2>Put each card into one of the four piles.</h2>
+            <p>A card can go with a pile by its color, its shape, or how many shapes it has. The rule for matching can change while you play.</p>
+            <p>After each pick, the screen tells you if you were right, and then a new card shows up. You can tap, click, or press the number keys 1 to 4.</p>
             <ol class="rule-list">
-              <li>Look at the drawn card in the center of the screen.</li>
-              <li>Select the pile where the card should be sorted.</li>
-              <li>Use feedback to infer the current rule.</li>
+              <li>Look at the card in the middle of the screen.</li>
+              <li>Pick the pile where you think the card goes.</li>
+              <li>Watch what the screen tells you to figure out the rule.</li>
             </ol>
-            <div class="accessibility-note">This version uses color as one sorting feature. Color-vision differences, low screen brightness, or tinted displays can affect performance.</div>
+            <div class="accessibility-note">One of the rules in this game uses color. If colors are hard for you to tell apart, or your screen is dim or has a color tint, the game can be harder to play.</div>
           </div>
 
           <aside class="config-panel" aria-labelledby="configHeading">
-            <h2 id="configHeading">Session</h2>
+            <h2 id="configHeading">Set up your game</h2>
             <div class="field">
-              <label for="versionSelect">Configuration</label>
+              <label for="versionSelect">Pick a version</label>
               <select id="versionSelect">
                 <option value="short">Short Version (default)</option>
                 <option value="original">Original Version</option>
@@ -1184,19 +1184,19 @@
           <div class="draw-area">
             <div class="feedback" id="feedback" aria-live="assertive"></div>
             <div class="draw-card empty" id="drawCard">Waiting</div>
-            <p class="cue" id="responseCue">Select the pile on which the card should be sorted.</p>
+            <p class="cue" id="responseCue">Pick the pile where the card goes.</p>
           </div>
           <div class="pile-grid" id="pileGrid" aria-label="Sorting piles"></div>
         </section>
 
         <div class="task-actions">
-          <button class="quiet-button" id="quitButton" type="button">End session</button>
+          <button class="quiet-button" id="quitButton" type="button">End game</button>
         </div>
 
         <div class="confirm-overlay" id="confirmOverlay" hidden>
           <div class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmText">
-            <h2 id="confirmTitle">End this session?</h2>
-            <p id="confirmText">You will see results for the sorts completed so far.</p>
+            <h2 id="confirmTitle">End the game?</h2>
+            <p id="confirmText">You will see your results for the cards you have sorted so far.</p>
             <div class="confirm-actions">
               <button class="secondary-button" id="cancelEndButton" type="button">Keep sorting</button>
               <button class="primary-button danger-button" id="confirmEndButton" type="button">View results</button>
@@ -1207,7 +1207,7 @@
 
       <section class="screen results-screen" id="resultsScreen" hidden>
         <div class="results-panel">
-          <h2 id="resultsHeading">Session complete</h2>
+          <h2 id="resultsHeading">You're done!</h2>
           <p id="resultsSummary"></p>
           <div class="metric-grid" id="metricGrid"></div>
           <div class="interpretation-panel" id="interpretationPanel"></div>
@@ -1252,14 +1252,14 @@
           deck: "short",
           totalSorts: 64,
           correctSortsToShift: 5,
-          description: "Modified 24-card deck. The sorting rule can change during the task. The task ends after 64 sorts."
+          description: "Uses a smaller set of 24 cards. The rule can change while you play. The game ends after you sort 64 cards."
         },
         original: {
           label: "Original Version",
           deck: "full",
           totalSorts: 128,
           correctSortsToShift: 10,
-          description: "Full 64-card deck. Cards are reshuffled as needed so the task can run 128 sorts. The sorting rule can change during the task."
+          description: "Uses the full set of 64 cards. The cards get shuffled again as needed so you can sort 128 cards. The rule can change while you play."
         }
       },
       piles: [
@@ -1430,7 +1430,7 @@
       dom.versionDetails.innerHTML = `
         <strong>${escapeHtml(version.label)}</strong><br>
         ${escapeHtml(version.description)}<br>
-        <span>${version.totalSorts} total sorts. The sorting rule can change as you work.</span>
+        <span>${version.totalSorts} cards in all. The rule can change while you play.</span>
       `;
       dom.versionStatus.textContent = version.label;
     }
@@ -1503,7 +1503,7 @@
       dom.feedback.className = "feedback";
       dom.drawCard.className = "draw-card";
       dom.drawCard.innerHTML = renderCardSvg(state.currentCard, `trial-${state.trialNumber}`);
-      dom.responseCue.textContent = "Select the pile on which the card should be sorted.";
+      dom.responseCue.textContent = "Pick the pile where the card goes.";
       for (const button of dom.pileGrid.querySelectorAll(".pile-button")) {
         button.disabled = false;
         button.classList.remove("selected");
@@ -1620,7 +1620,7 @@
       }
       dom.feedback.textContent = correct ? "Correct!" : "Incorrect";
       dom.feedback.className = `feedback ${correct ? "good" : "bad"}`;
-      dom.responseCue.textContent = "Next card loading.";
+      dom.responseCue.textContent = "Next card is coming.";
     }
 
     function finishTask(endedEarly = false) {
@@ -1676,7 +1676,7 @@
       dom.drawCard.textContent = "Waiting";
       dom.feedback.textContent = "";
       dom.progressBar.style.width = "0%";
-      dom.trialStatus.textContent = "No active session";
+      dom.trialStatus.textContent = "No game yet";
       updateVersionDetails();
       showScreen("setup");
     }
@@ -1686,15 +1686,15 @@
       const accuracy = trialsCompleted ? state.totalCorrect / trialsCompleted : 0;
       const medianRt = median(state.trials.map((trial) => trial.rt).filter(Number.isFinite));
       const oldRuleErrorRate = state.totalErrors ? Math.round((state.perseverativeErrors / state.totalErrors) * 100) : 0;
-      const completionText = state.endedEarly ? "ended early" : "was completed";
-      dom.resultsHeading.textContent = state.endedEarly ? "Session ended" : "Session complete";
-      dom.resultsSummary.textContent = `${state.version.label} ${completionText} after ${trialsCompleted} of ${state.version.totalSorts} sorts.`;
+      const completionText = state.endedEarly ? "You ended early." : "You finished.";
+      dom.resultsHeading.textContent = state.endedEarly ? "You ended early" : "You're done!";
+      dom.resultsSummary.textContent = `${completionText} You sorted ${trialsCompleted} of ${state.version.totalSorts} cards in the ${state.version.label}.`;
       const metrics = [
-        { label: "Accuracy", value: `${Math.round(accuracy * 100)}%`, primary: true },
-        { label: "Cards sorted correctly", value: `${state.totalCorrect} / ${trialsCompleted}` },
-        { label: "Old-rule errors", value: `${state.perseverativeErrors} / ${state.totalErrors}` },
-        { label: "Cards with errors", value: state.totalErrors },
-        { label: "Typical response time", value: Number.isFinite(medianRt) ? `${Math.round(medianRt)} ms` : "n/a" }
+        { label: "Percent right", value: `${Math.round(accuracy * 100)}%`, primary: true },
+        { label: "Cards you got right", value: `${state.totalCorrect} / ${trialsCompleted}` },
+        { label: "Old-rule mistakes", value: `${state.perseverativeErrors} / ${state.totalErrors}` },
+        { label: "Cards you missed", value: state.totalErrors },
+        { label: "Usual answer time", value: Number.isFinite(medianRt) ? `${Math.round(medianRt)} ms` : "n/a" }
       ];
       dom.metricGrid.innerHTML = metrics.map((metric) => `
         <div class="metric${metric.minor ? " minor" : ""}${metric.primary ? " primary" : ""}">
@@ -1702,7 +1702,7 @@
           <strong>${escapeHtml(String(metric.value))}</strong>
         </div>
       `).join("");
-      dom.resultMeta.textContent = `Session ID: ${state.sessionId}. Use Download CSV for the trial-by-trial record.`;
+      dom.resultMeta.textContent = `Session ID: ${state.sessionId}. Click Download CSV to get a record of every card.`;
       resetShareUi();
       renderResultsInterpretation({ trialsCompleted, accuracy, medianRt, oldRuleErrorRate });
     }
@@ -1711,23 +1711,23 @@
       const accuracyPercent = Math.round(accuracy * 100);
       const cardText = trialsCompleted === 1 ? "1 card" : `${trialsCompleted} cards`;
       const perseverativeText = state.perseverativeErrors === 0
-        ? "No responses clearly matched a previously rewarded pattern at the wrong time."
-        : `Old-rule errors are responses that matched a previously rewarded pattern at the wrong time. This session had ${state.perseverativeErrors} ${state.perseverativeErrors === 1 ? "old-rule error" : "old-rule errors"}.`;
+        ? "You never went back to an old rule after it stopped working. Nice job keeping up with the changes."
+        : `An old-rule mistake is when you keep using a rule that used to be right but is not right anymore. You made ${state.perseverativeErrors} ${state.perseverativeErrors === 1 ? "old-rule mistake" : "old-rule mistakes"}.`;
       const responseSpeedText = Number.isFinite(medianRt)
-        ? `Your typical response took about ${Math.round(medianRt)} ms.`
-        : "Response speed was not available for this session.";
-      const oldRuleErrorText = `${state.perseverativeErrors} old-rule ${state.perseverativeErrors === 1 ? "error" : "errors"} (${oldRuleErrorRate}% of errors)`;
+        ? `Most of your picks took about ${Math.round(medianRt)} ms (a ms, or millisecond, is one-thousandth of a second).`
+        : "We could not measure how fast you answered this time.";
+      const oldRuleErrorText = `${state.perseverativeErrors} of your mistakes (${oldRuleErrorRate}% of them) ${state.perseverativeErrors === 1 ? "was" : "were"} old-rule mistakes`;
       const takeaway = state.endedEarly
-        ? `Takeaway: this was an incomplete session, so treat these numbers as a partial practice record, not a full task result.`
-        : `Takeaway: you matched the active sorting rule on ${accuracyPercent}% of sorts and made ${oldRuleErrorText}.`;
+        ? `The main point: you stopped early, so these numbers only cover part of the game. Treat them as practice, not a full result.`
+        : `The main point: you matched the right rule on ${accuracyPercent}% of your cards, and ${oldRuleErrorText}.`;
       dom.interpretationPanel.innerHTML = `
         <h3>What these results mean</h3>
         <p><strong>${escapeHtml(takeaway)}</strong></p>
-        <p>You sorted ${cardText} and matched the hidden rule on ${accuracyPercent}% of completed sorts. In this demonstration, higher accuracy simply means your choices matched the feedback rule more often.</p>
-        <p>A choice that worked earlier may not be the best choice later. This task looks at how choices adjust as feedback unfolds.</p>
+        <p>You sorted ${cardText} and matched the hidden rule on ${accuracyPercent}% of them. A higher score just means you matched the rule more often.</p>
+        <p>A pile that was right before may not be right later. This game looks at how well you change your picks once the rule changes.</p>
         <p>${escapeHtml(perseverativeText)}</p>
         <p>${escapeHtml(responseSpeedText)}</p>
-        <p class="clinical-note">This browser task is for demonstration and education. It should not be used as a clinical diagnosis or as a substitute for a professional assessment.</p>
+        <p class="clinical-note">This game is just for learning and fun. It is not a medical test, and it cannot tell you anything about your health. For that, talk to a doctor or another professional.</p>
       `;
     }
 
@@ -1748,18 +1748,18 @@
 
     function updateStatus(forceComplete = false) {
       if (!state) {
-        dom.trialStatus.textContent = "No active session";
+        dom.trialStatus.textContent = "No game yet";
         dom.progressBar.style.width = "0%";
         return;
       }
       dom.versionStatus.textContent = state.version.label;
       if (forceComplete) {
-        dom.trialStatus.textContent = state.endedEarly ? "Session ended" : "Session complete";
+        dom.trialStatus.textContent = state.endedEarly ? "Ended early" : "All done";
         const finished = state.endedEarly ? state.trials.length : state.version.totalSorts;
         dom.progressBar.style.width = `${Math.min(100, (finished / state.version.totalSorts) * 100)}%`;
         return;
       }
-      dom.trialStatus.textContent = `Sort ${state.trialNumber} of ${state.version.totalSorts}`;
+      dom.trialStatus.textContent = `Card ${state.trialNumber} of ${state.version.totalSorts}`;
       const completed = state.trials.length;
       dom.progressBar.style.width = `${Math.min(100, (completed / state.version.totalSorts) * 100)}%`;
     }
@@ -1949,28 +1949,28 @@
       const medianRt = median(state.trials.map((trial) => trial.rt).filter(Number.isFinite));
       const oldRuleErrorRate = state.totalErrors ? Math.round((state.perseverativeErrors / state.totalErrors) * 100) : 0;
       const completionLine = state.endedEarly
-        ? `${state.version.label} ended early after ${trialsCompleted} of ${state.version.totalSorts} sorts.`
-        : `${state.version.label} was completed after ${trialsCompleted} of ${state.version.totalSorts} sorts.`;
+        ? `${state.version.label}: ended early after ${trialsCompleted} of ${state.version.totalSorts} cards.`
+        : `${state.version.label}: finished after ${trialsCompleted} of ${state.version.totalSorts} cards.`;
       const oldRuleLine = state.totalErrors
-        ? `Old-rule errors: ${state.perseverativeErrors} of ${state.totalErrors} errors (${oldRuleErrorRate}% of errors).`
-        : "Old-rule errors: 0; no errors were recorded.";
+        ? `Old-rule mistakes: ${state.perseverativeErrors} of ${state.totalErrors} mistakes (${oldRuleErrorRate}%).`
+        : "Old-rule mistakes: 0. No mistakes were made.";
       const responseTimeLine = Number.isFinite(medianRt)
-        ? `Typical response time: ${Math.round(medianRt)} ms.`
-        : "Typical response time: not available.";
+        ? `Usual answer time: ${Math.round(medianRt)} ms.`
+        : "Usual answer time: not measured.";
       const completionNote = state.endedEarly
-        ? "These are partial practice results, not a full task result."
-        : "This was a completed practice session.";
+        ? "These numbers cover only part of the game, so they are just practice."
+        : "This was a full practice game.";
       const text = [
         "Berg Card Sorting Test results",
         "",
         completionLine,
-        `Accuracy: ${accuracyPercent}%.`,
-        `Cards sorted correctly: ${state.totalCorrect} of ${trialsCompleted}.`,
+        `Percent right: ${accuracyPercent}%.`,
+        `Cards I got right: ${state.totalCorrect} of ${trialsCompleted}.`,
         oldRuleLine,
         responseTimeLine,
         completionNote,
         "",
-        "This browser task is for demonstration and education. It should not be used as a clinical diagnosis or as a substitute for a professional assessment."
+        "This game is just for learning and fun. It is not a medical test, and it cannot tell you anything about your health. For that, talk to a doctor or another professional."
       ].join("\n");
       return {
         title: "Berg Card Sorting Test results",
