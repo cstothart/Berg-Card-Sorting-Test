@@ -6,20 +6,23 @@
   <title>Berg Card Sorting Test</title>
   <style>
     :root {
-      color-scheme: light;
-      --bg: #f4f6f8;
-      --panel: #ffffff;
-      --panel-strong: #f8fafb;
-      --text: #17212b;
-      --muted: #5b6671;
-      --line: #cfd8df;
-      --line-strong: #8493a0;
-      --accent: #176f7b;
-      --accent-dark: #0e4f58;
-      --good: #137a43;
-      --bad: #b42318;
-      --warn: #b7791f;
-      --shadow: 0 14px 30px rgba(23, 33, 43, 0.11);
+      color-scheme: dark;
+      --bg: #080b0e;
+      --panel: #121817;
+      --panel-strong: #1a2220;
+      --text: #f2f7f4;
+      --muted: #a4b2ae;
+      --line: #2c3835;
+      --line-strong: #60716b;
+      --accent: #32d0bb;
+      --accent-dark: #18a995;
+      --accent-warm: #f2b84b;
+      --good: #49d17d;
+      --bad: #ff7068;
+      --warn: #f2b84b;
+      --card-face: #10171c;
+      --card-line: #8cebdd;
+      --shadow: 0 22px 54px rgba(0, 0, 0, 0.42);
       --radius: 8px;
       --card-ratio: 4 / 3;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -41,7 +44,9 @@
 
     body {
       margin: 0;
-      background: var(--bg);
+      background:
+        linear-gradient(135deg, rgba(50, 208, 187, 0.12), transparent 36%),
+        linear-gradient(145deg, #080b0e 0%, #10120f 46%, #071412 100%);
       color: var(--text);
       font-size: 16px;
       line-height: 1.45;
@@ -65,7 +70,7 @@
 
     button:focus-visible,
     select:focus-visible {
-      outline: 3px solid rgba(23, 111, 123, 0.26);
+      outline: 3px solid rgba(50, 208, 187, 0.32);
       outline-offset: 2px;
     }
 
@@ -85,8 +90,10 @@
       justify-content: space-between;
       gap: 1rem;
       padding: calc(0.9rem + env(safe-area-inset-top, 0px)) clamp(1rem, 4vw, 2rem) 0.9rem;
-      background: var(--panel);
+      background: rgba(14, 20, 19, 0.92);
       border-bottom: 1px solid var(--line);
+      box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(14px);
     }
 
     .brand {
@@ -127,6 +134,7 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--panel-strong);
+      color: var(--text);
       white-space: nowrap;
     }
 
@@ -190,10 +198,10 @@
     .accessibility-note {
       margin-top: 1rem;
       padding: 0.75rem 0.85rem;
-      border: 1px solid rgba(183, 121, 31, 0.28);
+      border: 1px solid rgba(242, 184, 75, 0.35);
       border-radius: var(--radius);
-      background: #fff8eb;
-      color: #6f4a0c;
+      background: rgba(242, 184, 75, 0.12);
+      color: #f7d79d;
       font-size: 0.95rem;
     }
 
@@ -218,7 +226,7 @@
       padding: 0.45rem 0.6rem;
       border: 1px solid var(--line-strong);
       border-radius: var(--radius);
-      background: #fff;
+      background: #0e1413;
       color: var(--text);
     }
 
@@ -255,18 +263,19 @@
     }
 
     .primary-button {
-      background: var(--accent);
-      color: #fff;
+      background: linear-gradient(135deg, var(--accent), #69e2c0);
+      color: #07110f;
+      box-shadow: 0 10px 22px rgba(50, 208, 187, 0.16);
     }
 
     .primary-button:hover,
     .primary-button:focus-visible {
-      background: var(--accent-dark);
+      background: linear-gradient(135deg, #4de0ca, #8af0cf);
     }
 
     .secondary-button {
-      background: #fff;
-      color: var(--accent-dark);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--accent);
       border-color: var(--line-strong);
     }
 
@@ -305,14 +314,14 @@
       height: 0.55rem;
       overflow: hidden;
       border-radius: 999px;
-      background: #d7e0e7;
-      border: 1px solid #c0ccd6;
+      background: #15201e;
+      border: 1px solid #263633;
     }
 
     .progress-bar {
       width: 0%;
       height: 100%;
-      background: var(--accent);
+      background: linear-gradient(90deg, var(--accent), var(--accent-warm));
       transition: width 180ms ease;
     }
 
@@ -326,8 +335,8 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0)),
-        #d9dee3;
+        linear-gradient(180deg, rgba(50, 208, 187, 0.08), rgba(242, 184, 75, 0.04)),
+        #101715;
       box-shadow: var(--shadow);
     }
 
@@ -342,11 +351,11 @@
       position: relative;
       min-width: 0;
       padding: 0;
-      border: 3px solid #1d252c;
+      border: 3px solid var(--card-line);
       border-radius: 5px;
-      background: #fff;
+      background: var(--card-face);
       aspect-ratio: var(--card-ratio);
-      box-shadow: 0 4px 10px rgba(21, 32, 43, 0.14);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
       overflow: hidden;
       -webkit-tap-highlight-color: transparent;
     }
@@ -361,7 +370,7 @@
       display: grid;
       place-items: center;
       border-radius: 999px;
-      background: rgba(21, 32, 43, 0.82);
+      background: rgba(5, 8, 10, 0.88);
       color: #fff;
       font-size: 0.78rem;
       font-weight: 800;
@@ -370,7 +379,7 @@
     .pile-button:hover,
     .pile-button:focus-visible {
       border-color: var(--accent);
-      outline: 3px solid rgba(20, 108, 148, 0.22);
+      outline: 3px solid rgba(50, 208, 187, 0.26);
       outline-offset: 2px;
     }
 
@@ -384,7 +393,7 @@
 
     .pile-button.selected {
       border-color: var(--accent);
-      outline: 4px solid rgba(20, 108, 148, 0.25);
+      outline: 4px solid rgba(50, 208, 187, 0.28);
       outline-offset: 2px;
     }
 
@@ -413,23 +422,23 @@
 
     .feedback.good {
       color: var(--good);
-      background: rgba(19, 122, 67, 0.1);
-      border-color: rgba(19, 122, 67, 0.25);
+      background: rgba(73, 209, 125, 0.12);
+      border-color: rgba(73, 209, 125, 0.32);
     }
 
     .feedback.bad {
       color: var(--bad);
-      background: rgba(180, 35, 24, 0.1);
-      border-color: rgba(180, 35, 24, 0.25);
+      background: rgba(255, 112, 104, 0.13);
+      border-color: rgba(255, 112, 104, 0.34);
     }
 
     .draw-card {
       width: min(260px, 58vw);
       aspect-ratio: var(--card-ratio);
-      border: 3px solid #1d252c;
+      border: 3px solid var(--card-line);
       border-radius: 5px;
-      background: #fff;
-      box-shadow: 0 8px 18px rgba(21, 32, 43, 0.16);
+      background: var(--card-face);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3);
       overflow: hidden;
     }
 
@@ -465,7 +474,7 @@
     .interpretation-panel {
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
+      background: rgba(255, 255, 255, 0.035);
       padding: clamp(0.95rem, 3vw, 1.15rem);
       margin: 0 0 1.2rem;
     }
@@ -479,6 +488,10 @@
     .interpretation-panel p {
       margin: 0 0 0.7rem;
       color: var(--muted);
+    }
+
+    .interpretation-panel strong {
+      color: var(--text);
     }
 
     .interpretation-panel p:last-child {
@@ -500,8 +513,8 @@
     }
 
     .metric.primary {
-      background: #eef8f7;
-      border-color: rgba(23, 111, 123, 0.28);
+      background: rgba(50, 208, 187, 0.13);
+      border-color: rgba(50, 208, 187, 0.36);
     }
 
     .metric span {
@@ -540,6 +553,57 @@
       margin-top: 0.75rem;
       color: var(--muted);
       font-size: 0.92rem;
+    }
+
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: end center;
+      padding: 1rem;
+      background: rgba(3, 6, 7, 0.68);
+      backdrop-filter: blur(12px);
+    }
+
+    .confirm-overlay[hidden] {
+      display: none !important;
+    }
+
+    .confirm-dialog {
+      width: min(420px, 100%);
+      padding: 1rem;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .confirm-dialog h2 {
+      margin: 0 0 0.45rem;
+      font-size: 1.12rem;
+      line-height: 1.2;
+    }
+
+    .confirm-dialog p {
+      margin: 0 0 1rem;
+      color: var(--muted);
+    }
+
+    .confirm-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+    }
+
+    .danger-button {
+      background: linear-gradient(135deg, #ff7068, #f2b84b);
+      color: #120806;
+    }
+
+    .danger-button:hover,
+    .danger-button:focus-visible {
+      background: linear-gradient(135deg, #ff8b84, #ffd06e);
     }
 
     .sr-only {
@@ -619,7 +683,7 @@
       .intro-panel,
       .config-panel,
       .results-panel {
-        box-shadow: 0 8px 18px rgba(21, 32, 43, 0.08);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.26);
       }
 
       .intro-panel h2,
@@ -706,13 +770,16 @@
       }
 
       .result-actions,
-      .task-actions {
+      .task-actions,
+      .confirm-actions {
         display: grid;
       }
 
       .result-actions .primary-button,
       .result-actions .secondary-button,
-      .task-actions .quiet-button {
+      .task-actions .quiet-button,
+      .confirm-actions .primary-button,
+      .confirm-actions .secondary-button {
         width: 100%;
       }
     }
@@ -762,7 +829,7 @@
         <div class="setup-layout">
           <div class="intro-panel">
             <h2>Sort each drawn card into one of the four piles.</h2>
-            <p>Cards can match a pile by color, shape, or count. The hidden rule changes after a run of correct sorts.</p>
+            <p>Cards can match a pile by color, shape, or count. The sorting rule can change during the task.</p>
             <p>After each response, feedback appears and the next card loads. Use touch, mouse, or number keys 1 through 4.</p>
             <ol class="rule-list">
               <li>Look at the drawn card in the center of the screen.</li>
@@ -803,6 +870,17 @@
 
         <div class="task-actions">
           <button class="quiet-button" id="quitButton" type="button">End session</button>
+        </div>
+
+        <div class="confirm-overlay" id="confirmOverlay" hidden>
+          <div class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmText">
+            <h2 id="confirmTitle">End this session?</h2>
+            <p id="confirmText">You will see results for the sorts completed so far.</p>
+            <div class="confirm-actions">
+              <button class="secondary-button" id="cancelEndButton" type="button">Keep sorting</button>
+              <button class="primary-button danger-button" id="confirmEndButton" type="button">View results</button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -846,14 +924,14 @@
           deck: "short",
           totalSorts: 64,
           correctSortsToShift: 5,
-          description: "Modified 24-card deck. No drawn card matches a pile on more than one attribute. The hidden rule changes during the task. The task ends after 64 sorts."
+          description: "Modified 24-card deck. The sorting rule can change during the task. The task ends after 64 sorts."
         },
         original: {
           label: "Original Version",
           deck: "full",
           totalSorts: 128,
           correctSortsToShift: 10,
-          description: "Full 64-card deck containing all count, shape, and color combinations. Cards are reshuffled as needed so the task can run 128 sorts. The hidden rule changes during the task."
+          description: "Full 64-card deck. Cards are reshuffled as needed so the task can run 128 sorts. The sorting rule can change during the task."
         }
       },
       piles: [
@@ -866,12 +944,13 @@
       shapes: ["triangle", "diamond", "cross", "circle"],
       colors: ["red", "green", "yellow", "blue"],
       colorHex: {
-        red: "#ff1f1f",
-        green: "#008a22",
-        yellow: "#ffd43b",
-        blue: "#0717d5"
+        red: "#ff4f6d",
+        green: "#2ee66b",
+        yellow: "#ffd84d",
+        blue: "#4da3ff"
       },
-      shapeStroke: "#1d252c",
+      cardFace: "#10171c",
+      shapeStroke: "#f4fff9",
       shapeStrokeWidth: 2
     };
 
@@ -883,6 +962,9 @@
       versionDetails: document.getElementById("versionDetails"),
       startButton: document.getElementById("startButton"),
       quitButton: document.getElementById("quitButton"),
+      confirmOverlay: document.getElementById("confirmOverlay"),
+      cancelEndButton: document.getElementById("cancelEndButton"),
+      confirmEndButton: document.getElementById("confirmEndButton"),
       restartButton: document.getElementById("restartButton"),
       downloadButton: document.getElementById("downloadButton"),
       pileGrid: document.getElementById("pileGrid"),
@@ -901,6 +983,7 @@
 
     let state = null;
     let feedbackTimer = null;
+    let responseEnabledBeforeConfirm = false;
 
     function validateTaskConfig() {
       const expectedRules = ["Color", "Shape", "Count"];
@@ -1013,7 +1096,7 @@
       dom.versionDetails.innerHTML = `
         <strong>${escapeHtml(version.label)}</strong><br>
         ${escapeHtml(version.description)}<br>
-        <span>${version.totalSorts} total sorts. Rule changes after ${version.correctSortsToShift} correct sorts in a row.</span>
+        <span>${version.totalSorts} total sorts. The sorting rule can change as you work.</span>
       `;
       dom.versionStatus.textContent = version.label;
     }
@@ -1171,7 +1254,6 @@
         version: state.version.label,
         deck: state.version.deck,
         plannedSorts: state.version.totalSorts,
-        correctSortsToShift: state.version.correctSortsToShift,
         block: "Main",
         trial: state.trialNumber,
         drawnCardCount: state.currentCard.count,
@@ -1189,6 +1271,7 @@
         previousSort: details.previousRuleAtTrial || "",
         correctInRow: details.correctInRowForData,
         accuracy: details.correct ? "Correct" : "Incorrect",
+        accuracyNumeric: details.correct ? 1 : 0,
         perseverativeError: details.perseverative ? "Yes" : "No",
         ruleShiftedAfterTrial: details.ruleShifted ? "Yes" : "No",
         endedEarly: "",
@@ -1215,6 +1298,7 @@
       state.completedAt = new Date().toISOString();
       state.endedEarly = endedEarly;
       state.responseEnabled = false;
+      dom.confirmOverlay.hidden = true;
       renderResults();
       showScreen("results");
       updateStatus(true);
@@ -1225,9 +1309,28 @@
         resetToSetup();
         return;
       }
-      if (!window.confirm("End this session and view results for the sorts completed so far?")) {
+      showEndConfirm();
+    }
+
+    function showEndConfirm() {
+      if (!state) {
         return;
       }
+      responseEnabledBeforeConfirm = state.responseEnabled;
+      state.responseEnabled = false;
+      dom.confirmOverlay.hidden = false;
+      dom.cancelEndButton.focus();
+    }
+
+    function hideEndConfirm() {
+      dom.confirmOverlay.hidden = true;
+      if (state) {
+        state.responseEnabled = responseEnabledBeforeConfirm;
+        dom.quitButton.focus();
+      }
+    }
+
+    function confirmEndSession() {
       finishTask(true);
     }
 
@@ -1248,7 +1351,6 @@
       const trialsCompleted = state.trials.length;
       const accuracy = trialsCompleted ? state.totalCorrect / trialsCompleted : 0;
       const medianRt = median(state.trials.map((trial) => trial.rt).filter(Number.isFinite));
-      const possibleRuleRuns = Math.floor(state.version.totalSorts / state.version.correctSortsToShift);
       const oldRuleErrorRate = state.totalErrors ? Math.round((state.perseverativeErrors / state.totalErrors) * 100) : 0;
       const completionText = state.endedEarly ? "ended early" : "was completed";
       dom.resultsHeading.textContent = state.endedEarly ? "Session ended" : "Session complete";
@@ -1256,7 +1358,6 @@
       const metrics = [
         { label: "Accuracy", value: `${Math.round(accuracy * 100)}%`, primary: true },
         { label: "Cards sorted correctly", value: `${state.totalCorrect} / ${trialsCompleted}` },
-        { label: "Rule changes reached", value: `${state.completedCategories} / ${possibleRuleRuns}` },
         { label: "Old-rule errors", value: `${state.perseverativeErrors} / ${state.totalErrors}` },
         { label: "Cards with errors", value: state.totalErrors },
         { label: "Typical response time", value: Number.isFinite(medianRt) ? `${Math.round(medianRt)} ms` : "n/a" }
@@ -1268,28 +1369,27 @@
         </div>
       `).join("");
       dom.resultMeta.textContent = `Session ID: ${state.sessionId}. Use Download CSV for the trial-by-trial record.`;
-      renderResultsInterpretation({ trialsCompleted, accuracy, medianRt, possibleRuleRuns, oldRuleErrorRate });
+      renderResultsInterpretation({ trialsCompleted, accuracy, medianRt, oldRuleErrorRate });
     }
 
-    function renderResultsInterpretation({ trialsCompleted, accuracy, medianRt, possibleRuleRuns, oldRuleErrorRate }) {
+    function renderResultsInterpretation({ trialsCompleted, accuracy, medianRt, oldRuleErrorRate }) {
       const accuracyPercent = Math.round(accuracy * 100);
       const cardText = trialsCompleted === 1 ? "1 card" : `${trialsCompleted} cards`;
-      const ruleChangeText = state.completedCategories === 1 ? "1 time" : `${state.completedCategories} times`;
       const perseverativeText = state.perseverativeErrors === 0
-        ? "No responses clearly matched the old rule after it changed."
-        : `${state.perseverativeErrors} ${state.perseverativeErrors === 1 ? "response" : "responses"} matched the previous rule after a rule change. Fewer old-rule errors generally means faster adjustment to feedback.`;
+        ? "No responses clearly matched a previously rewarded pattern at the wrong time."
+        : `Old-rule errors are responses that matched a previously rewarded pattern at the wrong time. This session had ${state.perseverativeErrors} ${state.perseverativeErrors === 1 ? "old-rule error" : "old-rule errors"}.`;
       const responseSpeedText = Number.isFinite(medianRt)
         ? `Your typical response took about ${Math.round(medianRt)} ms.`
         : "Response speed was not available for this session.";
       const oldRuleErrorText = `${state.perseverativeErrors} old-rule ${state.perseverativeErrors === 1 ? "error" : "errors"} (${oldRuleErrorRate}% of errors)`;
       const takeaway = state.endedEarly
         ? `Takeaway: this was an incomplete session, so treat these numbers as a partial practice record, not a full task result.`
-        : `Takeaway: you matched the active sorting rule on ${accuracyPercent}% of sorts, reached ${state.completedCategories} of ${possibleRuleRuns} possible rule changes, and made ${oldRuleErrorText}.`;
+        : `Takeaway: you matched the active sorting rule on ${accuracyPercent}% of sorts and made ${oldRuleErrorText}.`;
       dom.interpretationPanel.innerHTML = `
         <h3>What these results mean</h3>
         <p><strong>${escapeHtml(takeaway)}</strong></p>
         <p>You sorted ${cardText} and matched the hidden rule on ${accuracyPercent}% of completed sorts. In this demonstration, higher accuracy simply means your choices matched the feedback rule more often.</p>
-        <p>The task reached a rule change ${ruleChangeText}. Each change means you had ${state.version.correctSortsToShift} correct sorts in a row and the task moved to a new rule.</p>
+        <p>A choice that worked earlier may not be the best choice later. This task looks at how choices adjust as feedback unfolds.</p>
         <p>${escapeHtml(perseverativeText)}</p>
         <p>${escapeHtml(responseSpeedText)}</p>
         <p class="clinical-note">This browser task is for demonstration and education. It should not be used as a clinical diagnosis or as a substitute for a professional assessment.</p>
@@ -1378,7 +1478,7 @@
       const shapes = positions[card.count].map((position, index) => renderShape(card.shape, position.x, position.y, fill, `${idPrefix}-${index}`)).join("");
       return `
         <svg viewBox="0 0 200 150" role="img" aria-label="${escapeHtml(describeCard(card))}" xmlns="http://www.w3.org/2000/svg">
-          <rect x="1" y="1" width="198" height="148" rx="3" fill="#ffffff"/>
+          <rect x="1" y="1" width="198" height="148" rx="3" fill="${TASK_CONFIG.cardFace}"/>
           ${shapes}
         </svg>
       `;
@@ -1436,7 +1536,6 @@
         "Version",
         "Deck",
         "Planned Sorts",
-        "Correct Sorts To Shift",
         "Ended Early",
         "Block",
         "Trial",
@@ -1451,12 +1550,9 @@
         "Sorted Count",
         "Sorted Shape",
         "Sorted Color",
-        "Active Rule",
-        "Previous Rule",
-        "Correct in a Row",
         "Accuracy",
+        "Correct Response Numeric",
         "Perseverative Error",
-        "Rule Shifted After Trial",
         "Response Time (ms)"
       ];
       const rows = state.trials.map((trial) => [
@@ -1467,7 +1563,6 @@
         trial.version,
         trial.deck,
         trial.plannedSorts,
-        trial.correctSortsToShift,
         state.endedEarly ? "Yes" : "No",
         trial.block,
         trial.trial,
@@ -1482,12 +1577,9 @@
         trial.sortedCount,
         trial.sortedShape,
         trial.sortedColor,
-        trial.correctSort,
-        trial.previousSort,
-        trial.correctInRow,
         trial.accuracy,
+        trial.accuracyNumeric,
         trial.perseverativeError,
-        trial.ruleShiftedAfterTrial,
         trial.rt
       ]);
       return [columns, ...rows].map((row) => row.map(csvEscape).join(",")).join("\r\n");
@@ -1553,6 +1645,8 @@
     dom.versionSelect.addEventListener("change", updateVersionDetails);
     dom.startButton.addEventListener("click", startTask);
     dom.quitButton.addEventListener("click", endSessionEarly);
+    dom.cancelEndButton.addEventListener("click", hideEndConfirm);
+    dom.confirmEndButton.addEventListener("click", confirmEndSession);
     dom.restartButton.addEventListener("click", resetToSetup);
     dom.downloadButton.addEventListener("click", downloadCsv);
 
