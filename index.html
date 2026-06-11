@@ -346,11 +346,19 @@
     .primary-button,
     .secondary-button,
     .quiet-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       min-height: 2.8rem;
       border-radius: var(--radius);
       border: 1px solid transparent;
       padding: 0.58rem 0.9rem;
+      color: inherit;
+      cursor: pointer;
+      font: inherit;
       font-weight: 720;
+      text-align: center;
+      text-decoration: none;
       box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
       transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
     }
@@ -745,6 +753,35 @@
       gap: 0.7rem;
     }
 
+    .share-fallback {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 0.7rem;
+      padding: 0.72rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(64, 240, 208, 0.06), rgba(255, 255, 255, 0.02)),
+        rgba(255, 255, 255, 0.018);
+    }
+
+    .share-fallback[hidden] {
+      display: none !important;
+    }
+
+    .share-status {
+      margin: 0.65rem 0 0;
+      color: var(--accent);
+      font-size: 0.88rem;
+      min-height: 1.2em;
+    }
+
+    .share-status:empty {
+      margin-top: 0;
+      min-height: 0;
+    }
+
     .result-meta {
       margin: 0.85rem 0 0;
       color: var(--muted);
@@ -952,6 +989,11 @@
       .config-panel,
       .results-panel {
         box-shadow: 0 14px 28px rgba(0, 0, 0, 0.34);
+      }
+
+      .result-actions > *,
+      .share-fallback > * {
+        flex: 1 1 100%;
       }
 
       .intro-panel h2,
@@ -1171,8 +1213,15 @@
           <div class="interpretation-panel" id="interpretationPanel"></div>
           <div class="result-actions">
             <button class="primary-button" id="downloadButton" type="button">Download CSV</button>
+            <button class="secondary-button" id="shareButton" type="button">Share results</button>
             <button class="secondary-button" id="restartButton" type="button">Start another session</button>
           </div>
+          <div class="share-fallback" id="shareFallback" role="group" aria-label="Share options" hidden>
+            <a class="secondary-button" id="emailShareLink" href="mailto:">Email</a>
+            <a class="secondary-button" id="textShareLink" href="sms:">Text</a>
+            <button class="secondary-button" id="copyShareButton" type="button">Copy</button>
+          </div>
+          <p class="share-status" id="shareStatus" aria-live="polite"></p>
           <p class="result-meta" id="resultMeta"></p>
         </div>
       </section>
@@ -1246,6 +1295,12 @@
       confirmEndButton: document.getElementById("confirmEndButton"),
       restartButton: document.getElementById("restartButton"),
       downloadButton: document.getElementById("downloadButton"),
+      shareButton: document.getElementById("shareButton"),
+      shareFallback: document.getElementById("shareFallback"),
+      emailShareLink: document.getElementById("emailShareLink"),
+      textShareLink: document.getElementById("textShareLink"),
+      copyShareButton: document.getElementById("copyShareButton"),
+      shareStatus: document.getElementById("shareStatus"),
       pileGrid: document.getElementById("pileGrid"),
       drawCard: document.getElementById("drawCard"),
       feedback: document.getElementById("feedback"),
@@ -1648,6 +1703,7 @@
         </div>
       `).join("");
       dom.resultMeta.textContent = `Session ID: ${state.sessionId}. Use Download CSV for the trial-by-trial record.`;
+      resetShareUi();
       renderResultsInterpretation({ trialsCompleted, accuracy, medianRt, oldRuleErrorRate });
     }
 
@@ -1884,6 +1940,144 @@
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
+    function buildSharePayload() {
+      if (!state) {
+        return { title: "Berg Card Sorting Test results", text: "" };
+      }
+      const trialsCompleted = state.trials.length;
+      const accuracyPercent = trialsCompleted ? Math.round((state.totalCorrect / trialsCompleted) * 100) : 0;
+      const medianRt = median(state.trials.map((trial) => trial.rt).filter(Number.isFinite));
+      const oldRuleErrorRate = state.totalErrors ? Math.round((state.perseverativeErrors / state.totalErrors) * 100) : 0;
+      const completionLine = state.endedEarly
+        ? `${state.version.label} ended early after ${trialsCompleted} of ${state.version.totalSorts} sorts.`
+        : `${state.version.label} was completed after ${trialsCompleted} of ${state.version.totalSorts} sorts.`;
+      const oldRuleLine = state.totalErrors
+        ? `Old-rule errors: ${state.perseverativeErrors} of ${state.totalErrors} errors (${oldRuleErrorRate}% of errors).`
+        : "Old-rule errors: 0; no errors were recorded.";
+      const responseTimeLine = Number.isFinite(medianRt)
+        ? `Typical response time: ${Math.round(medianRt)} ms.`
+        : "Typical response time: not available.";
+      const completionNote = state.endedEarly
+        ? "These are partial practice results, not a full task result."
+        : "This was a completed practice session.";
+      const text = [
+        "Berg Card Sorting Test results",
+        "",
+        completionLine,
+        `Accuracy: ${accuracyPercent}%.`,
+        `Cards sorted correctly: ${state.totalCorrect} of ${trialsCompleted}.`,
+        oldRuleLine,
+        responseTimeLine,
+        completionNote,
+        "",
+        "This browser task is for demonstration and education. It should not be used as a clinical diagnosis or as a substitute for a professional assessment."
+      ].join("\n");
+      return {
+        title: "Berg Card Sorting Test results",
+        text
+      };
+    }
+
+    function resetShareUi() {
+      dom.shareFallback.hidden = true;
+      dom.shareStatus.textContent = "";
+      updateShareFallbackLinks();
+    }
+
+    function updateShareFallbackLinks() {
+      const payload = buildSharePayload();
+      dom.emailShareLink.href = `mailto:?subject=${encodeURIComponent(payload.title)}&body=${encodeURIComponent(payload.text)}`;
+      dom.textShareLink.href = `sms:?&body=${encodeURIComponent(payload.text)}`;
+    }
+
+    function setShareStatus(message) {
+      dom.shareStatus.textContent = message;
+    }
+
+    function showShareFallback(message) {
+      updateShareFallbackLinks();
+      dom.shareFallback.hidden = false;
+      setShareStatus(message);
+    }
+
+    function canUseNativeShare(payload) {
+      if (typeof navigator.share !== "function") {
+        return false;
+      }
+      if (typeof navigator.canShare !== "function") {
+        return true;
+      }
+      try {
+        return navigator.canShare(payload);
+      } catch (error) {
+        return false;
+      }
+    }
+
+    async function shareResults() {
+      if (!state) {
+        return;
+      }
+      const payload = buildSharePayload();
+      updateShareFallbackLinks();
+      if (canUseNativeShare(payload)) {
+        try {
+          await navigator.share(payload);
+          dom.shareFallback.hidden = true;
+          setShareStatus("Results shared.");
+          return;
+        } catch (error) {
+          const wasCancelled = error && error.name === "AbortError";
+          showShareFallback(wasCancelled ? "Choose another share option." : "Sharing is not available in this browser.");
+          return;
+        }
+      }
+      showShareFallback("Sharing is not available in this browser.");
+    }
+
+    async function copyShareSummary() {
+      if (!state) {
+        return;
+      }
+      const payload = buildSharePayload();
+      try {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function" && window.isSecureContext) {
+          try {
+            await navigator.clipboard.writeText(payload.text);
+            setShareStatus("Results copied.");
+            return;
+          } catch (error) {
+            copyTextWithTextarea(payload.text);
+            setShareStatus("Results copied.");
+            return;
+          }
+        }
+        copyTextWithTextarea(payload.text);
+        setShareStatus("Results copied.");
+      } catch (error) {
+        setShareStatus("Copy is not available in this browser.");
+      }
+    }
+
+    function copyTextWithTextarea(text) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.top = "-1000px";
+      textarea.style.left = "-1000px";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      textarea.setSelectionRange(0, textarea.value.length);
+      const copied = document.execCommand && document.execCommand("copy");
+      textarea.remove();
+      if (!copied) {
+        throw new Error("Copy command failed");
+      }
+    }
+
     function csvEscape(value) {
       const text = value == null ? "" : String(value);
       if (/[",\r\n]/.test(text)) {
@@ -1932,6 +2126,10 @@
     dom.confirmEndButton.addEventListener("click", confirmEndSession);
     dom.restartButton.addEventListener("click", resetToSetup);
     dom.downloadButton.addEventListener("click", downloadCsv);
+    dom.shareButton.addEventListener("click", shareResults);
+    dom.copyShareButton.addEventListener("click", copyShareSummary);
+    dom.emailShareLink.addEventListener("click", () => setShareStatus("Opening email app."));
+    dom.textShareLink.addEventListener("click", () => setShareStatus("Opening text message app."));
 
     validateTaskConfig();
     updateVersionDetails();
