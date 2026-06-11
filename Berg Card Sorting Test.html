@@ -35,12 +35,17 @@
       min-height: 100%;
     }
 
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
     body {
       margin: 0;
       background: var(--bg);
       color: var(--text);
       font-size: 16px;
       line-height: 1.45;
+      min-width: 320px;
     }
 
     button,
@@ -50,6 +55,7 @@
 
     button {
       cursor: pointer;
+      touch-action: manipulation;
     }
 
     button:disabled {
@@ -58,16 +64,20 @@
 
     .app-shell {
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
     }
 
     .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      padding: 0.9rem clamp(1rem, 4vw, 2rem);
+      padding: calc(0.9rem + env(safe-area-inset-top, 0px)) clamp(1rem, 4vw, 2rem) 0.9rem;
       background: var(--panel);
       border-bottom: 1px solid var(--line);
     }
@@ -104,6 +114,7 @@
     .status-pill {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       min-height: 2rem;
       padding: 0.3rem 0.65rem;
       border: 1px solid var(--line);
@@ -203,6 +214,17 @@
       min-height: 6rem;
     }
 
+    .version-details strong {
+      color: var(--text);
+    }
+
+    .version-details span {
+      display: block;
+      margin-top: 0.35rem;
+      color: var(--text);
+      font-weight: 700;
+    }
+
     .primary-button,
     .secondary-button,
     .quiet-button {
@@ -281,7 +303,9 @@
       padding: clamp(0.85rem, 2vw, 1.2rem);
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #d9dee3;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0)),
+        #d9dee3;
       box-shadow: var(--shadow);
     }
 
@@ -301,6 +325,7 @@
       aspect-ratio: var(--card-ratio);
       box-shadow: 0 4px 10px rgba(21, 32, 43, 0.14);
       overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .pile-button::after {
@@ -404,6 +429,29 @@
       padding: clamp(1.1rem, 3vw, 1.5rem);
     }
 
+    .interpretation-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: clamp(0.95rem, 3vw, 1.15rem);
+      margin: 0 0 1.2rem;
+    }
+
+    .interpretation-panel h3 {
+      margin: 0 0 0.6rem;
+      font-size: 1.05rem;
+      line-height: 1.2;
+    }
+
+    .interpretation-panel p {
+      margin: 0 0 0.7rem;
+      color: var(--muted);
+    }
+
+    .interpretation-panel p:last-child {
+      margin-bottom: 0;
+    }
+
     .metric-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(130px, 1fr));
@@ -430,6 +478,11 @@
       display: block;
       font-size: clamp(1.25rem, 3vw, 1.75rem);
       line-height: 1.1;
+    }
+
+    .metric.minor strong {
+      font-size: clamp(0.92rem, 2vw, 1.08rem);
+      overflow-wrap: anywhere;
     }
 
     .result-actions {
@@ -461,6 +514,10 @@
         grid-template-columns: 1fr;
       }
 
+      .config-panel {
+        order: -1;
+      }
+
       .topbar {
         align-items: flex-start;
         flex-direction: column;
@@ -468,10 +525,11 @@
 
       .status-strip {
         justify-content: flex-start;
+        width: 100%;
       }
 
       .pile-grid {
-        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .metric-grid {
@@ -484,14 +542,98 @@
         padding: 0.75rem;
       }
 
+      .topbar {
+        gap: 0.65rem;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+
+      .brand h1 {
+        font-size: 1.08rem;
+      }
+
+      .brand span {
+        font-size: 0.78rem;
+      }
+
+      .intro-panel,
+      .config-panel,
+      .results-panel {
+        box-shadow: 0 8px 18px rgba(21, 32, 43, 0.08);
+      }
+
+      .intro-panel h2,
+      .results-panel h2,
+      .config-panel h2 {
+        font-size: 1.2rem;
+      }
+
+      .intro-panel p,
+      .config-panel p,
+      .rule-list {
+        font-size: 0.95rem;
+      }
+
+      .rule-list {
+        margin-top: 0.7rem;
+      }
+
+      .status-strip {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+        font-size: 0.8rem;
+      }
+
+      .status-pill {
+        min-height: 2.25rem;
+        white-space: normal;
+        text-align: center;
+      }
+
+      .task-screen {
+        gap: 0.55rem;
+      }
+
+      .task-board {
+        padding: 0.55rem;
+        gap: 0.55rem;
+      }
+
       .pile-grid {
         gap: 0.5rem;
+      }
+
+      .pile-button {
+        border-width: 2px;
+        min-height: 5.7rem;
       }
 
       .pile-button::after {
         width: 1.25rem;
         height: 1.25rem;
         font-size: 0.72rem;
+      }
+
+      .draw-area {
+        gap: 0.55rem;
+        min-height: auto;
+        padding: 0.15rem 0 0.35rem;
+      }
+
+      .draw-card {
+        width: min(244px, 76vw);
+        border-width: 2px;
+      }
+
+      .feedback {
+        width: 100%;
+        min-height: 1.95rem;
+        font-size: 1.08rem;
+      }
+
+      .cue {
+        font-size: 0.9rem;
       }
 
       .metric-grid {
@@ -507,6 +649,21 @@
       .secondary-button,
       .quiet-button {
         width: 100%;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .main {
+        padding: 0.55rem;
+      }
+
+      .pile-button {
+        min-height: 5.1rem;
+      }
+
+      .pile-button::after {
+        top: 0.25rem;
+        left: 0.25rem;
       }
     }
   </style>
@@ -529,8 +686,8 @@
         <div class="setup-layout">
           <div class="intro-panel">
             <h2>Sort each drawn card into one of the four piles.</h2>
-            <p>Cards can match a pile by color, shape, or count. The correct sorting rule is not shown and changes after a run of correct sorts.</p>
-            <p>After each response, the task gives feedback and advances to the next card. Use the mouse, touch, or number keys 1 through 4 to select a pile.</p>
+            <p>Cards can match a pile by color, shape, or count. The hidden rule changes after a run of correct sorts.</p>
+            <p>After each response, feedback appears and the next card loads. Use touch, mouse, or number keys 1 through 4.</p>
             <ol class="rule-list">
               <li>Look at the drawn card in the center of the screen.</li>
               <li>Select the pile where the card should be sorted.</li>
@@ -574,9 +731,10 @@
 
       <section class="screen results-screen" id="resultsScreen" hidden>
         <div class="results-panel">
-          <h2>Session complete</h2>
+          <h2 id="resultsHeading">Session complete</h2>
           <p id="resultsSummary"></p>
           <div class="metric-grid" id="metricGrid"></div>
+          <div class="interpretation-panel" id="interpretationPanel"></div>
           <div class="result-actions">
             <button class="primary-button" id="downloadButton" type="button">Download CSV</button>
             <button class="secondary-button" id="restartButton" type="button">Start another session</button>
@@ -610,14 +768,14 @@
           deck: "short",
           totalSorts: 64,
           correctSortsToShift: 5,
-          description: "Modified 24-card deck. No drawn card matches a pile on more than one attribute. Rule shifts after 5 correct sorts in a row."
+          description: "Modified 24-card deck. No drawn card matches a pile on more than one attribute. The hidden rule changes during the task. The task ends after 64 sorts."
         },
         original: {
           label: "Original Version",
           deck: "full",
           totalSorts: 128,
           correctSortsToShift: 10,
-          description: "Full 64-card deck containing all count, shape, and color combinations. Rule shifts after 10 correct sorts in a row."
+          description: "Full 64-card deck containing all count, shape, and color combinations. Cards are reshuffled as needed so the task can run 128 sorts. The hidden rule changes during the task."
         }
       },
       piles: [
@@ -631,8 +789,8 @@
       colors: ["red", "green", "yellow", "blue"],
       colorHex: {
         red: "#ff1f1f",
-        green: "#00b928",
-        yellow: "#ffc400",
+        green: "#008a22",
+        yellow: "#a66f00",
         blue: "#0717d5"
       }
     };
@@ -651,11 +809,13 @@
       drawCard: document.getElementById("drawCard"),
       feedback: document.getElementById("feedback"),
       responseCue: document.getElementById("responseCue"),
+      resultsHeading: document.getElementById("resultsHeading"),
       versionStatus: document.getElementById("versionStatus"),
       trialStatus: document.getElementById("trialStatus"),
       progressBar: document.getElementById("progressBar"),
       metricGrid: document.getElementById("metricGrid"),
-      resultsSummary: document.getElementById("resultsSummary")
+      resultsSummary: document.getElementById("resultsSummary"),
+      interpretationPanel: document.getElementById("interpretationPanel")
     };
 
     let state = null;
@@ -749,6 +909,7 @@
       dom.setupScreen.hidden = screenName !== "setup";
       dom.taskScreen.hidden = screenName !== "task";
       dom.resultsScreen.hidden = screenName !== "results";
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     }
 
     function updateVersionDetails() {
@@ -787,6 +948,7 @@
         totalErrors: 0,
         perseverativeErrors: 0,
         responseEnabled: false,
+        endedEarly: false,
         trialStartedAt: 0,
         selectedPileIndex: null,
         trials: []
@@ -936,13 +1098,14 @@
       dom.responseCue.textContent = "Next card loading.";
     }
 
-    function finishTask() {
+    function finishTask(endedEarly = false) {
       if (!state) {
         return;
       }
       clearTimeout(feedbackTimer);
       feedbackTimer = null;
       state.completedAt = new Date().toISOString();
+      state.endedEarly = endedEarly;
       state.responseEnabled = false;
       renderResults();
       showScreen("results");
@@ -954,7 +1117,7 @@
         resetToSetup();
         return;
       }
-      finishTask();
+      finishTask(true);
     }
 
     function resetToSetup() {
@@ -974,23 +1137,44 @@
       const trialsCompleted = state.trials.length;
       const accuracy = trialsCompleted ? state.totalCorrect / trialsCompleted : 0;
       const medianRt = median(state.trials.map((trial) => trial.rt).filter(Number.isFinite));
-      dom.resultsSummary.textContent = `${state.version.label} ended after ${trialsCompleted} of ${state.version.totalSorts} sorts.`;
+      const completionText = state.endedEarly ? "ended early" : "was completed";
+      dom.resultsHeading.textContent = state.endedEarly ? "Session ended" : "Session complete";
+      dom.resultsSummary.textContent = `${state.version.label} ${completionText} after ${trialsCompleted} of ${state.version.totalSorts} sorts.`;
       const metrics = [
-        { label: "Correct", value: `${state.totalCorrect} / ${trialsCompleted}` },
+        { label: "Cards sorted correctly", value: `${state.totalCorrect} / ${trialsCompleted}` },
         { label: "Accuracy", value: `${Math.round(accuracy * 100)}%` },
-        { label: "Categories completed", value: state.completedCategories },
-        { label: "Perseverative errors", value: state.perseverativeErrors },
-        { label: "Total errors", value: state.totalErrors },
-        { label: "Median RT", value: Number.isFinite(medianRt) ? `${Math.round(medianRt)} ms` : "n/a" },
-        { label: "Final streak", value: state.correctInRow },
-        { label: "Session ID", value: state.sessionId }
+        { label: "Times the rule changed", value: state.completedCategories },
+        { label: "Stuck on old rule", value: state.perseverativeErrors },
+        { label: "Cards with errors", value: state.totalErrors },
+        { label: "Typical response time", value: Number.isFinite(medianRt) ? `${Math.round(medianRt)} ms` : "n/a" },
+        { label: "Session ID", value: state.sessionId, minor: true }
       ];
       dom.metricGrid.innerHTML = metrics.map((metric) => `
-        <div class="metric">
+        <div class="metric${metric.minor ? " minor" : ""}">
           <span>${escapeHtml(metric.label)}</span>
           <strong>${escapeHtml(String(metric.value))}</strong>
         </div>
       `).join("");
+      renderResultsInterpretation({ trialsCompleted, accuracy, medianRt });
+    }
+
+    function renderResultsInterpretation({ trialsCompleted, accuracy, medianRt }) {
+      const accuracyPercent = Math.round(accuracy * 100);
+      const cardText = trialsCompleted === 1 ? "1 card" : `${trialsCompleted} cards`;
+      const ruleChangeText = state.completedCategories === 1 ? "1 time" : `${state.completedCategories} times`;
+      const perseverativeText = state.perseverativeErrors === 0
+        ? "You did not appear to keep using an old rule after it changed."
+        : `${state.perseverativeErrors} ${state.perseverativeErrors === 1 ? "response" : "responses"} matched the previous rule after a rule change.`;
+      const responseSpeedText = Number.isFinite(medianRt)
+        ? `Your typical response took about ${Math.round(medianRt)} ms.`
+        : "Response speed was not available for this session.";
+      dom.interpretationPanel.innerHTML = `
+        <h3>What these results mean</h3>
+        <p>You sorted ${cardText} and matched the hidden rule on ${accuracyPercent}% of completed sorts.</p>
+        <p>The hidden rule changed ${ruleChangeText}. That happens only after a long enough run of correct sorts.</p>
+        <p>${escapeHtml(perseverativeText)}</p>
+        <p>${escapeHtml(responseSpeedText)} This browser task is for demonstration and education, not a clinical diagnosis.</p>
+      `;
     }
 
     function updateStatus(forceComplete = false) {
@@ -1001,8 +1185,9 @@
       }
       dom.versionStatus.textContent = state.version.label;
       if (forceComplete) {
-        dom.trialStatus.textContent = "Session complete";
-        dom.progressBar.style.width = "100%";
+        dom.trialStatus.textContent = state.endedEarly ? "Session ended" : "Session complete";
+        const finished = state.endedEarly ? state.trials.length : state.version.totalSorts;
+        dom.progressBar.style.width = `${Math.min(100, (finished / state.version.totalSorts) * 100)}%`;
         return;
       }
       dom.trialStatus.textContent = `Sort ${state.trialNumber} of ${state.version.totalSorts}`;
@@ -1188,14 +1373,6 @@
     validateTaskConfig();
     updateVersionDetails();
     showScreen("setup");
-
-    window.BCST_DEBUG = {
-      TASK_CONFIG,
-      buildDeck,
-      isShortDeckCard,
-      matchesRule,
-      renderCardSvg
-    };
   </script>
 </body>
 </html>
