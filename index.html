@@ -1727,7 +1727,6 @@
         <p>A pile that was right before may not be right later. This game looks at how well you change your picks once the rule changes.</p>
         <p>${escapeHtml(perseverativeText)}</p>
         <p>${escapeHtml(responseSpeedText)}</p>
-        <p class="clinical-note">This game is just for learning and fun. It is not a medical test, and it cannot tell you anything about your health. For that, talk to a doctor or another professional.</p>
       `;
     }
 
@@ -1969,8 +1968,7 @@
         oldRuleLine,
         responseTimeLine,
         completionNote,
-        "",
-        "This game is just for learning and fun. It is not a medical test, and it cannot tell you anything about your health. For that, talk to a doctor or another professional."
+        ""
       ].join("\n");
       return {
         title: "Berg Card Sorting Test results",
