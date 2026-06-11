@@ -2,24 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Berg Card Sorting Test</title>
   <style>
     :root {
       color-scheme: light;
-      --bg: #eef2f5;
+      --bg: #f4f6f8;
       --panel: #ffffff;
-      --panel-strong: #f7f9fb;
-      --text: #15202b;
-      --muted: #52616f;
-      --line: #c9d3dc;
-      --line-strong: #8091a1;
-      --accent: #146c94;
-      --accent-dark: #0e4f6d;
+      --panel-strong: #f8fafb;
+      --text: #17212b;
+      --muted: #5b6671;
+      --line: #cfd8df;
+      --line-strong: #8493a0;
+      --accent: #176f7b;
+      --accent-dark: #0e4f58;
       --good: #137a43;
       --bad: #b42318;
       --warn: #b7791f;
-      --shadow: 0 14px 30px rgba(21, 32, 43, 0.12);
+      --shadow: 0 14px 30px rgba(23, 33, 43, 0.11);
       --radius: 8px;
       --card-ratio: 4 / 3;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -46,6 +46,7 @@
       font-size: 16px;
       line-height: 1.45;
       min-width: 320px;
+      overflow-x: hidden;
     }
 
     button,
@@ -60,6 +61,12 @@
 
     button:disabled {
       cursor: not-allowed;
+    }
+
+    button:focus-visible,
+    select:focus-visible {
+      outline: 3px solid rgba(23, 111, 123, 0.26);
+      outline-offset: 2px;
     }
 
     .app-shell {
@@ -127,6 +134,7 @@
       width: min(1180px, 100%);
       margin: 0 auto;
       padding: clamp(1rem, 3vw, 1.7rem);
+      padding-bottom: calc(clamp(1rem, 3vw, 1.7rem) + env(safe-area-inset-bottom, 0px));
       flex: 1;
     }
 
@@ -177,6 +185,16 @@
 
     .rule-list li + li {
       margin-top: 0.45rem;
+    }
+
+    .accessibility-note {
+      margin-top: 1rem;
+      padding: 0.75rem 0.85rem;
+      border: 1px solid rgba(183, 121, 31, 0.28);
+      border-radius: var(--radius);
+      background: #fff8eb;
+      color: #6f4a0c;
+      font-size: 0.95rem;
     }
 
     .config-panel {
@@ -280,6 +298,7 @@
     .task-screen {
       display: grid;
       gap: 1rem;
+      scroll-margin-top: calc(5.5rem + env(safe-area-inset-top, 0px));
     }
 
     .progress-wrap {
@@ -299,6 +318,9 @@
 
     .task-board {
       display: grid;
+      grid-template-areas:
+        "piles"
+        "draw";
       gap: clamp(0.9rem, 2vw, 1.2rem);
       padding: clamp(0.85rem, 2vw, 1.2rem);
       border: 1px solid var(--line);
@@ -310,6 +332,7 @@
     }
 
     .pile-grid {
+      grid-area: piles;
       display: grid;
       grid-template-columns: repeat(4, minmax(120px, 1fr));
       gap: clamp(0.65rem, 2vw, 1rem);
@@ -355,6 +378,10 @@
       opacity: 0.72;
     }
 
+    .pile-button.selected:disabled {
+      opacity: 1;
+    }
+
     .pile-button.selected {
       border-color: var(--accent);
       outline: 4px solid rgba(20, 108, 148, 0.25);
@@ -362,6 +389,7 @@
     }
 
     .draw-area {
+      grid-area: draw;
       display: grid;
       place-items: center;
       gap: 0.85rem;
@@ -370,7 +398,7 @@
     }
 
     .feedback {
-      min-height: 2.3rem;
+      min-height: 2.4rem;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -429,6 +457,11 @@
       padding: clamp(1.1rem, 3vw, 1.5rem);
     }
 
+    .results-panel > p {
+      margin: 0;
+      color: var(--muted);
+    }
+
     .interpretation-panel {
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -466,6 +499,11 @@
       padding: 0.85rem;
     }
 
+    .metric.primary {
+      background: #eef8f7;
+      border-color: rgba(23, 111, 123, 0.28);
+    }
+
     .metric span {
       display: block;
       color: var(--muted);
@@ -489,6 +527,19 @@
       display: flex;
       flex-wrap: wrap;
       gap: 0.7rem;
+    }
+
+    .result-meta {
+      margin: 0.85rem 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      overflow-wrap: anywhere;
+    }
+
+    .clinical-note {
+      margin-top: 0.75rem;
+      color: var(--muted);
+      font-size: 0.92rem;
     }
 
     .sr-only {
@@ -532,6 +583,13 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
+      .task-board {
+        grid-template-areas:
+          "draw"
+          "piles";
+        align-content: start;
+      }
+
       .metric-grid {
         grid-template-columns: repeat(2, minmax(120px, 1fr));
       }
@@ -540,9 +598,11 @@
     @media (max-width: 470px) {
       .main {
         padding: 0.75rem;
+        padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
       }
 
       .topbar {
+        position: static;
         gap: 0.65rem;
         padding-left: 0.75rem;
         padding-right: 0.75rem;
@@ -595,18 +655,22 @@
         gap: 0.55rem;
       }
 
+      body[data-screen="task"] .main {
+        padding-top: 0.55rem;
+      }
+
       .task-board {
         padding: 0.55rem;
-        gap: 0.55rem;
+        gap: 0.45rem;
       }
 
       .pile-grid {
-        gap: 0.5rem;
+        gap: 0.42rem;
       }
 
       .pile-button {
         border-width: 2px;
-        min-height: 5.7rem;
+        min-height: 5.25rem;
       }
 
       .pile-button::after {
@@ -616,20 +680,21 @@
       }
 
       .draw-area {
-        gap: 0.55rem;
+        gap: 0.38rem;
         min-height: auto;
-        padding: 0.15rem 0 0.35rem;
+        padding: 0.05rem 0 0.2rem;
       }
 
       .draw-card {
-        width: min(244px, 76vw);
+        width: min(178px, 54vw);
         border-width: 2px;
       }
 
       .feedback {
         width: 100%;
-        min-height: 1.95rem;
-        font-size: 1.08rem;
+        min-height: 1.75rem;
+        padding: 0.18rem 0.65rem;
+        font-size: 1rem;
       }
 
       .cue {
@@ -646,8 +711,8 @@
       }
 
       .result-actions .primary-button,
-      .secondary-button,
-      .quiet-button {
+      .result-actions .secondary-button,
+      .task-actions .quiet-button {
         width: 100%;
       }
     }
@@ -658,12 +723,23 @@
       }
 
       .pile-button {
-        min-height: 5.1rem;
+        min-height: 4.8rem;
       }
 
       .pile-button::after {
         top: 0.25rem;
         left: 0.25rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
       }
     }
   </style>
@@ -693,6 +769,7 @@
               <li>Select the pile where the card should be sorted.</li>
               <li>Use feedback to infer the current rule.</li>
             </ol>
+            <div class="accessibility-note">This version uses color as one sorting feature. Color-vision differences, low screen brightness, or tinted displays can affect performance.</div>
           </div>
 
           <aside class="config-panel" aria-labelledby="configHeading">
@@ -716,12 +793,12 @@
         </div>
 
         <section class="task-board" aria-label="Card sorting task">
-          <div class="pile-grid" id="pileGrid" aria-label="Sorting piles"></div>
           <div class="draw-area">
             <div class="feedback" id="feedback" aria-live="assertive"></div>
             <div class="draw-card empty" id="drawCard">Waiting</div>
             <p class="cue" id="responseCue">Select the pile on which the card should be sorted.</p>
           </div>
+          <div class="pile-grid" id="pileGrid" aria-label="Sorting piles"></div>
         </section>
 
         <div class="task-actions">
@@ -739,6 +816,7 @@
             <button class="primary-button" id="downloadButton" type="button">Download CSV</button>
             <button class="secondary-button" id="restartButton" type="button">Start another session</button>
           </div>
+          <p class="result-meta" id="resultMeta"></p>
         </div>
       </section>
     </main>
@@ -790,9 +868,11 @@
       colorHex: {
         red: "#ff1f1f",
         green: "#008a22",
-        yellow: "#a66f00",
+        yellow: "#ffd43b",
         blue: "#0717d5"
-      }
+      },
+      shapeStroke: "#1d252c",
+      shapeStrokeWidth: 2
     };
 
     const dom = {
@@ -815,7 +895,8 @@
       progressBar: document.getElementById("progressBar"),
       metricGrid: document.getElementById("metricGrid"),
       resultsSummary: document.getElementById("resultsSummary"),
-      interpretationPanel: document.getElementById("interpretationPanel")
+      interpretationPanel: document.getElementById("interpretationPanel"),
+      resultMeta: document.getElementById("resultMeta")
     };
 
     let state = null;
@@ -826,6 +907,20 @@
       const configuredRules = TASK_CONFIG.ruleSequence.slice().sort().join("|");
       if (configuredRules !== expectedRules.slice().sort().join("|")) {
         throw new Error("TASK_CONFIG.ruleSequence must contain Color, Shape, and Count.");
+      }
+      if (TASK_CONFIG.ruleSequence.join("|") !== "Color|Shape|Count") {
+        throw new Error("TASK_CONFIG.ruleSequence must preserve the Color, Shape, Count order used by this implementation.");
+      }
+      if (TASK_CONFIG.initialRuleIndex !== 0) {
+        throw new Error("TASK_CONFIG.initialRuleIndex must start at Color for this implementation.");
+      }
+      const shortVersion = TASK_CONFIG.versions.short;
+      const originalVersion = TASK_CONFIG.versions.original;
+      if (!shortVersion || shortVersion.deck !== "short" || shortVersion.totalSorts !== 64 || shortVersion.correctSortsToShift !== 5) {
+        throw new Error("Short Version must use a 24-card deck, 64 sorts, and a rule shift after 5 correct sorts.");
+      }
+      if (!originalVersion || originalVersion.deck !== "full" || originalVersion.totalSorts !== 128 || originalVersion.correctSortsToShift !== 10) {
+        throw new Error("Original Version must use a 64-card deck, 128 sorts, and a rule shift after 10 correct sorts.");
       }
       if (TASK_CONFIG.piles.length !== 4) {
         throw new Error("TASK_CONFIG.piles must define exactly four sorting piles.");
@@ -909,6 +1004,7 @@
       dom.setupScreen.hidden = screenName !== "setup";
       dom.taskScreen.hidden = screenName !== "task";
       dom.resultsScreen.hidden = screenName !== "results";
+      document.body.dataset.screen = screenName;
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     }
 
@@ -917,7 +1013,7 @@
       dom.versionDetails.innerHTML = `
         <strong>${escapeHtml(version.label)}</strong><br>
         ${escapeHtml(version.description)}<br>
-        <span>${version.totalSorts} total sorts.</span>
+        <span>${version.totalSorts} total sorts. Rule changes after ${version.correctSortsToShift} correct sorts in a row.</span>
       `;
       dom.versionStatus.textContent = version.label;
     }
@@ -984,8 +1080,7 @@
       state.currentCard = state.drawPile.shift();
       state.trialNumber += 1;
       state.selectedPileIndex = null;
-      state.responseEnabled = true;
-      state.trialStartedAt = performance.now();
+      state.responseEnabled = false;
 
       dom.feedback.textContent = "";
       dom.feedback.className = "feedback";
@@ -997,6 +1092,10 @@
         button.classList.remove("selected");
       }
       updateStatus();
+      keepCurrentCardVisible(() => {
+        state.trialStartedAt = performance.now();
+        state.responseEnabled = true;
+      });
     }
 
     function ensureDrawPile() {
@@ -1064,17 +1163,25 @@
     }
 
     function makeTrialRow(details) {
+      const matchedDimensions = getMatchedDimensions(state.currentCard, details.selectedPile);
       return {
         sessionId: state.sessionId,
         seed: state.seed,
         startedAt: state.startedAt,
         version: state.version.label,
+        deck: state.version.deck,
+        plannedSorts: state.version.totalSorts,
+        correctSortsToShift: state.version.correctSortsToShift,
         block: "Main",
         trial: state.trialNumber,
         drawnCardCount: state.currentCard.count,
         drawnCardShape: titleCase(state.currentCard.shape),
         drawnCardColor: titleCase(state.currentCard.color),
         selectedPile: details.pileIndex + 1,
+        matchedColor: matchedDimensions.includes("Color") ? "Yes" : "No",
+        matchedShape: matchedDimensions.includes("Shape") ? "Yes" : "No",
+        matchedCount: matchedDimensions.includes("Count") ? "Yes" : "No",
+        matchedDimensions: matchedDimensions.join("; "),
         sortedCount: details.selectedPile.count,
         sortedShape: titleCase(details.selectedPile.shape),
         sortedColor: titleCase(details.selectedPile.color),
@@ -1084,6 +1191,7 @@
         accuracy: details.correct ? "Correct" : "Incorrect",
         perseverativeError: details.perseverative ? "Yes" : "No",
         ruleShiftedAfterTrial: details.ruleShifted ? "Yes" : "No",
+        endedEarly: "",
         rt: details.rt
       };
     }
@@ -1117,6 +1225,9 @@
         resetToSetup();
         return;
       }
+      if (!window.confirm("End this session and view results for the sorts completed so far?")) {
+        return;
+      }
       finishTask(true);
     }
 
@@ -1137,44 +1248,67 @@
       const trialsCompleted = state.trials.length;
       const accuracy = trialsCompleted ? state.totalCorrect / trialsCompleted : 0;
       const medianRt = median(state.trials.map((trial) => trial.rt).filter(Number.isFinite));
+      const possibleRuleRuns = Math.floor(state.version.totalSorts / state.version.correctSortsToShift);
+      const oldRuleErrorRate = state.totalErrors ? Math.round((state.perseverativeErrors / state.totalErrors) * 100) : 0;
       const completionText = state.endedEarly ? "ended early" : "was completed";
       dom.resultsHeading.textContent = state.endedEarly ? "Session ended" : "Session complete";
       dom.resultsSummary.textContent = `${state.version.label} ${completionText} after ${trialsCompleted} of ${state.version.totalSorts} sorts.`;
       const metrics = [
+        { label: "Accuracy", value: `${Math.round(accuracy * 100)}%`, primary: true },
         { label: "Cards sorted correctly", value: `${state.totalCorrect} / ${trialsCompleted}` },
-        { label: "Accuracy", value: `${Math.round(accuracy * 100)}%` },
-        { label: "Times the rule changed", value: state.completedCategories },
-        { label: "Stuck on old rule", value: state.perseverativeErrors },
+        { label: "Rule changes reached", value: `${state.completedCategories} / ${possibleRuleRuns}` },
+        { label: "Old-rule errors", value: `${state.perseverativeErrors} / ${state.totalErrors}` },
         { label: "Cards with errors", value: state.totalErrors },
-        { label: "Typical response time", value: Number.isFinite(medianRt) ? `${Math.round(medianRt)} ms` : "n/a" },
-        { label: "Session ID", value: state.sessionId, minor: true }
+        { label: "Typical response time", value: Number.isFinite(medianRt) ? `${Math.round(medianRt)} ms` : "n/a" }
       ];
       dom.metricGrid.innerHTML = metrics.map((metric) => `
-        <div class="metric${metric.minor ? " minor" : ""}">
+        <div class="metric${metric.minor ? " minor" : ""}${metric.primary ? " primary" : ""}">
           <span>${escapeHtml(metric.label)}</span>
           <strong>${escapeHtml(String(metric.value))}</strong>
         </div>
       `).join("");
-      renderResultsInterpretation({ trialsCompleted, accuracy, medianRt });
+      dom.resultMeta.textContent = `Session ID: ${state.sessionId}. Use Download CSV for the trial-by-trial record.`;
+      renderResultsInterpretation({ trialsCompleted, accuracy, medianRt, possibleRuleRuns, oldRuleErrorRate });
     }
 
-    function renderResultsInterpretation({ trialsCompleted, accuracy, medianRt }) {
+    function renderResultsInterpretation({ trialsCompleted, accuracy, medianRt, possibleRuleRuns, oldRuleErrorRate }) {
       const accuracyPercent = Math.round(accuracy * 100);
       const cardText = trialsCompleted === 1 ? "1 card" : `${trialsCompleted} cards`;
       const ruleChangeText = state.completedCategories === 1 ? "1 time" : `${state.completedCategories} times`;
       const perseverativeText = state.perseverativeErrors === 0
-        ? "You did not appear to keep using an old rule after it changed."
-        : `${state.perseverativeErrors} ${state.perseverativeErrors === 1 ? "response" : "responses"} matched the previous rule after a rule change.`;
+        ? "No responses clearly matched the old rule after it changed."
+        : `${state.perseverativeErrors} ${state.perseverativeErrors === 1 ? "response" : "responses"} matched the previous rule after a rule change. Fewer old-rule errors generally means faster adjustment to feedback.`;
       const responseSpeedText = Number.isFinite(medianRt)
         ? `Your typical response took about ${Math.round(medianRt)} ms.`
         : "Response speed was not available for this session.";
+      const oldRuleErrorText = `${state.perseverativeErrors} old-rule ${state.perseverativeErrors === 1 ? "error" : "errors"} (${oldRuleErrorRate}% of errors)`;
+      const takeaway = state.endedEarly
+        ? `Takeaway: this was an incomplete session, so treat these numbers as a partial practice record, not a full task result.`
+        : `Takeaway: you matched the active sorting rule on ${accuracyPercent}% of sorts, reached ${state.completedCategories} of ${possibleRuleRuns} possible rule changes, and made ${oldRuleErrorText}.`;
       dom.interpretationPanel.innerHTML = `
         <h3>What these results mean</h3>
-        <p>You sorted ${cardText} and matched the hidden rule on ${accuracyPercent}% of completed sorts.</p>
-        <p>The hidden rule changed ${ruleChangeText}. That happens only after a long enough run of correct sorts.</p>
+        <p><strong>${escapeHtml(takeaway)}</strong></p>
+        <p>You sorted ${cardText} and matched the hidden rule on ${accuracyPercent}% of completed sorts. In this demonstration, higher accuracy simply means your choices matched the feedback rule more often.</p>
+        <p>The task reached a rule change ${ruleChangeText}. Each change means you had ${state.version.correctSortsToShift} correct sorts in a row and the task moved to a new rule.</p>
         <p>${escapeHtml(perseverativeText)}</p>
-        <p>${escapeHtml(responseSpeedText)} This browser task is for demonstration and education, not a clinical diagnosis.</p>
+        <p>${escapeHtml(responseSpeedText)}</p>
+        <p class="clinical-note">This browser task is for demonstration and education. It should not be used as a clinical diagnosis or as a substitute for a professional assessment.</p>
       `;
+    }
+
+    function keepCurrentCardVisible(onVisible) {
+      if (!window.matchMedia("(max-width: 840px)").matches) {
+        onVisible();
+        return;
+      }
+      window.requestAnimationFrame(() => {
+        dom.taskScreen.scrollIntoView({
+          block: "start",
+          inline: "nearest",
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+        });
+        window.setTimeout(onVisible, window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 180);
+      });
     }
 
     function updateStatus(forceComplete = false) {
@@ -1191,7 +1325,7 @@
         return;
       }
       dom.trialStatus.textContent = `Sort ${state.trialNumber} of ${state.version.totalSorts}`;
-      const completed = Math.max(0, state.trialNumber - 1);
+      const completed = state.trials.length;
       dom.progressBar.style.width = `${Math.min(100, (completed / state.version.totalSorts) * 100)}%`;
     }
 
@@ -1206,6 +1340,20 @@
         return card.count === pile.count;
       }
       throw new Error(`Unknown sorting rule: ${rule}`);
+    }
+
+    function getMatchedDimensions(card, pile) {
+      const dimensions = [];
+      if (card.color === pile.color) {
+        dimensions.push("Color");
+      }
+      if (card.shape === pile.shape) {
+        dimensions.push("Shape");
+      }
+      if (card.count === pile.count) {
+        dimensions.push("Count");
+      }
+      return dimensions;
     }
 
     function describeCard(card) {
@@ -1237,18 +1385,19 @@
     }
 
     function renderShape(shape, x, y, fill, id) {
+      const stroke = `stroke="${TASK_CONFIG.shapeStroke}" stroke-width="${TASK_CONFIG.shapeStrokeWidth}" stroke-linejoin="round"`;
       if (shape === "circle") {
-        return `<circle id="${id}" cx="${x}" cy="${y}" r="20" fill="${fill}"/>`;
+        return `<circle id="${id}" cx="${x}" cy="${y}" r="20" fill="${fill}" ${stroke}/>`;
       }
       if (shape === "triangle") {
-        return `<polygon id="${id}" points="${x},${y - 24} ${x - 24},${y + 22} ${x + 24},${y + 22}" fill="${fill}"/>`;
+        return `<polygon id="${id}" points="${x},${y - 24} ${x - 24},${y + 22} ${x + 24},${y + 22}" fill="${fill}" ${stroke}/>`;
       }
       if (shape === "diamond") {
-        return `<polygon id="${id}" points="${x},${y - 27} ${x + 19},${y} ${x},${y + 27} ${x - 19},${y}" fill="${fill}"/>`;
+        return `<polygon id="${id}" points="${x},${y - 27} ${x + 19},${y} ${x},${y + 27} ${x - 19},${y}" fill="${fill}" ${stroke}/>`;
       }
       if (shape === "cross") {
         return `
-          <g id="${id}" fill="${fill}">
+          <g id="${id}" fill="${fill}" ${stroke}>
             <rect x="${x - 9}" y="${y - 28}" width="18" height="56" rx="1"/>
             <rect x="${x - 28}" y="${y - 9}" width="56" height="18" rx="1"/>
           </g>
@@ -1264,22 +1413,30 @@
         "Started At",
         "Completed At",
         "Version",
+        "Deck",
+        "Planned Sorts",
+        "Correct Sorts To Shift",
+        "Ended Early",
         "Block",
         "Trial",
         "Drawn Card Count",
         "Drawn Card Shape",
         "Drawn Card Color",
         "Selected Pile",
+        "Matched Color",
+        "Matched Shape",
+        "Matched Count",
+        "Matched Dimensions",
         "Sorted Count",
         "Sorted Shape",
         "Sorted Color",
-        "Correct Sort",
-        "Previous Sort",
+        "Active Rule",
+        "Previous Rule",
         "Correct in a Row",
         "Accuracy",
         "Perseverative Error",
         "Rule Shifted After Trial",
-        "RT"
+        "Response Time (ms)"
       ];
       const rows = state.trials.map((trial) => [
         trial.sessionId,
@@ -1287,12 +1444,20 @@
         trial.startedAt,
         state.completedAt,
         trial.version,
+        trial.deck,
+        trial.plannedSorts,
+        trial.correctSortsToShift,
+        state.endedEarly ? "Yes" : "No",
         trial.block,
         trial.trial,
         trial.drawnCardCount,
         trial.drawnCardShape,
         trial.drawnCardColor,
         trial.selectedPile,
+        trial.matchedColor,
+        trial.matchedShape,
+        trial.matchedCount,
+        trial.matchedDimensions,
         trial.sortedCount,
         trial.sortedShape,
         trial.sortedColor,
