@@ -106,84 +106,20 @@
       isolation: isolate;
     }
 
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: calc(0.9rem + env(safe-area-inset-top, 0px)) clamp(1rem, 4vw, 2rem) 0.9rem;
-      background:
-        linear-gradient(180deg, rgba(16, 26, 24, 0.94), rgba(8, 13, 13, 0.9));
-      border-bottom: 1px solid rgba(64, 240, 208, 0.18);
-      box-shadow: 0 14px 42px rgba(0, 0, 0, 0.42);
-      backdrop-filter: blur(18px) saturate(1.18);
-    }
-
-    .topbar::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -1px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(64, 240, 208, 0.78), rgba(246, 189, 86, 0.42), transparent);
-    }
-
-    .brand {
-      display: flex;
-      flex-direction: column;
-      gap: 0.1rem;
-      min-width: 0;
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-size: clamp(1.1rem, 2.5vw, 1.45rem);
-      line-height: 1.1;
-      font-weight: 760;
-      text-shadow: 0 0 26px rgba(64, 240, 208, 0.16);
-    }
-
-    .brand span {
-      color: var(--muted);
-      font-size: 0.86rem;
-      font-weight: 650;
-    }
-
-    .status-strip {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 0.7rem;
-      flex-wrap: wrap;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 2rem;
-      padding: 0.3rem 0.65rem;
-      border: 1px solid rgba(64, 240, 208, 0.26);
-      border-radius: var(--radius);
-      background:
-        linear-gradient(180deg, rgba(21, 33, 30, 0.94), rgba(8, 14, 14, 0.94));
-      color: var(--text);
-      white-space: nowrap;
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03) inset, 0 10px 24px rgba(0, 0, 0, 0.22);
-    }
-
     .main {
       width: min(1200px, 100%);
+      min-height: 100vh;
+      min-height: 100dvh;
       margin: 0 auto;
       padding: clamp(1rem, 3vw, 1.9rem);
       padding-bottom: calc(clamp(1rem, 3vw, 1.9rem) + env(safe-area-inset-bottom, 0px));
       flex: 1;
+      display: grid;
+      place-items: center;
+    }
+
+    .screen {
+      width: 100%;
     }
 
     .screen[hidden] {
@@ -412,7 +348,7 @@
     .task-screen {
       display: grid;
       gap: 1.05rem;
-      scroll-margin-top: calc(5.5rem + env(safe-area-inset-top, 0px));
+      scroll-margin-top: 0;
     }
 
     .progress-wrap {
@@ -934,16 +870,6 @@
         order: -1;
       }
 
-      .topbar {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .status-strip {
-        justify-content: flex-start;
-        width: 100%;
-      }
-
       .pile-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -968,21 +894,6 @@
       .main {
         padding: 0.75rem;
         padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
-      }
-
-      .topbar {
-        position: static;
-        gap: 0.65rem;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-      }
-
-      .brand h1 {
-        font-size: 1.08rem;
-      }
-
-      .brand span {
-        font-size: 0.78rem;
       }
 
       .intro-panel,
@@ -1016,25 +927,8 @@
         padding-right: 0.55rem;
       }
 
-      .status-strip {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.5rem;
-        font-size: 0.8rem;
-      }
-
-      .status-pill {
-        min-height: 2.25rem;
-        white-space: normal;
-        text-align: center;
-      }
-
       .task-screen {
         gap: 0.55rem;
-      }
-
-      body[data-screen="task"] .main {
-        padding-top: 0.55rem;
       }
 
       .task-board {
@@ -1134,17 +1028,6 @@
 </head>
 <body>
   <div class="app-shell">
-    <header class="topbar">
-      <div class="brand">
-        <h1>Berg Card Sorting Test</h1>
-        <span>Standalone browser task</span>
-      </div>
-      <div class="status-strip" id="statusStrip" aria-live="polite">
-        <span class="status-pill" id="versionStatus">Ready</span>
-        <span class="status-pill" id="trialStatus">No game yet</span>
-      </div>
-    </header>
-
     <main class="main">
       <section class="screen setup-screen" id="setupScreen">
         <div class="setup-layout">
@@ -1432,7 +1315,9 @@
         ${escapeHtml(version.description)}<br>
         <span>${version.totalSorts} cards in all. The rule can change while you play.</span>
       `;
-      dom.versionStatus.textContent = version.label;
+      if (dom.versionStatus) {
+        dom.versionStatus.textContent = version.label;
+      }
     }
 
     function startTask() {
@@ -1676,7 +1561,9 @@
       dom.drawCard.textContent = "Waiting";
       dom.feedback.textContent = "";
       dom.progressBar.style.width = "0%";
-      dom.trialStatus.textContent = "No game yet";
+      if (dom.trialStatus) {
+        dom.trialStatus.textContent = "No game yet";
+      }
       updateVersionDetails();
       showScreen("setup");
     }
@@ -1747,18 +1634,26 @@
 
     function updateStatus(forceComplete = false) {
       if (!state) {
-        dom.trialStatus.textContent = "No game yet";
+        if (dom.trialStatus) {
+          dom.trialStatus.textContent = "No game yet";
+        }
         dom.progressBar.style.width = "0%";
         return;
       }
-      dom.versionStatus.textContent = state.version.label;
+      if (dom.versionStatus) {
+        dom.versionStatus.textContent = state.version.label;
+      }
       if (forceComplete) {
-        dom.trialStatus.textContent = state.endedEarly ? "Ended early" : "All done";
+        if (dom.trialStatus) {
+          dom.trialStatus.textContent = state.endedEarly ? "Ended early" : "All done";
+        }
         const finished = state.endedEarly ? state.trials.length : state.version.totalSorts;
         dom.progressBar.style.width = `${Math.min(100, (finished / state.version.totalSorts) * 100)}%`;
         return;
       }
-      dom.trialStatus.textContent = `Card ${state.trialNumber} of ${state.version.totalSorts}`;
+      if (dom.trialStatus) {
+        dom.trialStatus.textContent = `Card ${state.trialNumber} of ${state.version.totalSorts}`;
+      }
       const completed = state.trials.length;
       dom.progressBar.style.width = `${Math.min(100, (completed / state.version.totalSorts) * 100)}%`;
     }
